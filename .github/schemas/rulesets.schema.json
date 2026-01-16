@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mediathekarr/schemas/rulesets.schema.json",
+  "title": "Rulesets Data",
+  "description": "Schema for rulesets.json - Media matching rules",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "mediaId", "topic", "priority", "filters", "titleRegexRules", "episodeRegex", "seasonRegex", "matchingStrategy", "media"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "Unique ruleset ID",
+        "minimum": 1
+      },
+      "mediaId": {
+        "type": "integer",
+        "description": "Reference to media ID",
+        "minimum": 1
+      },
+      "topic": {
+        "type": "string",
+        "description": "Topic/show name to match",
+        "minLength": 1
+      },
+      "priority": {
+        "type": "integer",
+        "description": "Priority for rule matching (lower = higher priority)",
+        "minimum": 0
+      },
+      "filters": {
+        "type": "string",
+        "description": "JSON string containing filter array"
+      },
+      "titleRegexRules": {
+        "type": "string",
+        "description": "JSON string containing title regex rules array"
+      },
+      "episodeRegex": {
+        "type": ["string", "null"],
+        "description": "Regex pattern to extract episode number"
+      },
+      "seasonRegex": {
+        "type": ["string", "null"],
+        "description": "Regex pattern to extract season number"
+      },
+      "matchingStrategy": {
+        "type": "string",
+        "description": "Strategy for matching episodes",
+        "enum": [
+          "SeasonAndEpisodeNumber",
+          "ItemTitleIncludes",
+          "ItemTitleExact",
+          "ItemTitleEqualsAirdate",
+          "ByAbsoluteEpisodeNumber"
+        ]
+      },
+      "media": {
+        "type": "object",
+        "description": "Associated media information",
+        "required": ["media_id", "media_name", "media_type", "media_tvdbId"],
+        "additionalProperties": false,
+        "properties": {
+          "media_id": {
+            "type": "integer",
+            "description": "Media ID",
+            "minimum": 1
+          },
+          "media_name": {
+            "type": "string",
+            "description": "Media name",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "description": "Type of media",
+            "enum": ["show", "movie"]
+          },
+          "media_tvdbId": {
+            "type": ["integer", "null"],
+            "description": "TVDB ID (null for generic entries)",
+            "minimum": 1
+          },
+          "media_tmdbId": {
+            "type": ["integer", "null"],
+            "description": "TMDB ID (optional)"
+          },
+          "media_imdbId": {
+            "type": ["string", "null"],
+            "description": "IMDB ID (optional)"
+          }
+        }
+      }
+    }
+  }
+}

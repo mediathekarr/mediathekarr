@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mediathekarr/schemas/shows.schema.json",
+  "title": "Shows Data",
+  "description": "Schema for shows.json - TVDB show data with episodes",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["tvdbId", "name", "germanName", "aliases", "episodes"],
+    "additionalProperties": false,
+    "properties": {
+      "tvdbId": {
+        "type": "integer",
+        "description": "TVDB ID of the show",
+        "minimum": 1
+      },
+      "name": {
+        "type": "string",
+        "description": "Original name of the show",
+        "minLength": 1
+      },
+      "germanName": {
+        "type": ["string", "null"],
+        "description": "German name of the show"
+      },
+      "aliases": {
+        "type": "array",
+        "description": "Alternative names for the show",
+        "items": {
+          "type": "string"
+        }
+      },
+      "episodes": {
+        "type": "array",
+        "description": "List of episodes",
+        "items": {
+          "type": "object",
+          "required": ["name", "seasonNumber", "episodeNumber", "aired"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Episode name"
+            },
+            "seasonNumber": {
+              "type": "integer",
+              "description": "Season number",
+              "minimum": 0
+            },
+            "episodeNumber": {
+              "type": "integer",
+              "description": "Episode number within the season",
+              "minimum": 0
+            },
+            "aired": {
+              "type": ["string", "null"],
+              "description": "Air date in ISO format (YYYY-MM-DD)",
+              "format": "date"
+            }
+          }
+        }
+      }
+    }
+  }
+}
