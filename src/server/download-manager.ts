@@ -7,6 +7,8 @@ import * as path from "path";
 const MAX_CONCURRENT_DOWNLOADS = 2;
 const DOWNLOAD_BASE_PATH =
   process.env.DOWNLOAD_FOLDER_PATH || path.join(process.cwd(), "downloads");
+const DOWNLOAD_TEMP_PATH =
+  process.env.DOWNLOAD_TEMP_PATH || path.join(DOWNLOAD_BASE_PATH, "incomplete");
 
 // Semaphore implementation for limiting concurrent downloads
 class Semaphore {
@@ -102,14 +104,17 @@ async function processDownload(downloadId: string): Promise<void> {
       data: { status: "downloading" },
     });
 
-    // Create category directory
+    // Create temp and category directories
     const categoryDir = path.join(DOWNLOAD_BASE_PATH, download.category);
+    await fs.mkdir(DOWNLOAD_TEMP_PATH, { recursive: true });
     await fs.mkdir(categoryDir, { recursive: true });
 
     // Determine file extension from URL
     const urlPath = new URL(download.url).pathname;
     const fileExtension = path.extname(urlPath) || ".mp4";
-    const mp4Path = path.join(categoryDir, `${download.title}${fileExtension}`);
+    // Download to temp folder first
+    const tempMp4Path = path.join(DOWNLOAD_TEMP_PATH, `${download.title}${fileExtension}`);
+    const mp4Path = tempMp4Path;
 
     // Download the file
     const downloadSuccess = await downloadFile(
@@ -133,34 +138,45 @@ async function processDownload(downloadId: string): Promise<void> {
       return;
     }
 
-    console.log(`[Download] File downloaded: ${mp4Path}`);
+    console.log(`[Download] File downloaded to temp: ${mp4Path}`);
 
     // Convert to MKV if it's an MP4
     if (fileExtension === ".mp4") {
-      const mkvPath = path.join(categoryDir, `${download.title}.mkv`);
+      // Convert in temp folder first
+      const tempMkvPath = path.join(DOWNLOAD_TEMP_PATH, `${download.title}.mkv`);
+      const finalMkvPath = path.join(categoryDir, `${download.title}.mkv`);
 
-      console.log(`[Download] Converting to MKV: ${mkvPath}`);
+      console.log(`[Download] Converting to MKV: ${tempMkvPath}`);
 
       await prisma.download.update({
         where: { id: downloadId },
         data: { status: "converting" },
       });
 
-      const conversionResult = await convertMp4ToMkv(mp4Path, mkvPath);
+      const conversionResult = await convertMp4ToMkv(mp4Path, tempMkvPath);
 
       if (!conversionResult.success) {
+        // Clean up temp file on failure
+        await fs.unlink(mp4Path).catch(() => {});
         await markAsFailed(downloadId, conversionResult.error || "Conversion failed");
         return;
       }
 
+      // Move completed MKV to final location
+      console.log(`[Download] Moving to final location: ${finalMkvPath}`);
+      await fs.rename(tempMkvPath, finalMkvPath);
+
+      // Clean up temp MP4 file
+      await fs.unlink(mp4Path).catch(() => {});
+
       // Get file size
-      const stats = await fs.stat(mkvPath);
+      const stats = await fs.stat(finalMkvPath);
 
       // Calculate storage path (may be mapped differently)
       const downloadFolderMapping = process.env.DOWNLOAD_FOLDER_PATH_MAPPING;
       const storagePath = downloadFolderMapping
         ? path.join(downloadFolderMapping, download.category, `${download.title}.mkv`)
-        : mkvPath;
+        : finalMkvPath;
 
       // Mark as completed
       const downloadTime = Math.floor((Date.now() - startTime) / 1000);
@@ -180,8 +196,11 @@ async function processDownload(downloadId: string): Promise<void> {
         `[Download] Completed: ${download.title} (${Math.round(stats.size / 1024 / 1024)}MB in ${downloadTime}s)`
       );
     } else {
-      // Non-MP4 file, just mark as completed
-      const stats = await fs.stat(mp4Path);
+      // Non-MP4 file, move to final location
+      const finalPath = path.join(categoryDir, `${download.title}${fileExtension}`);
+      await fs.rename(mp4Path, finalPath);
+
+      const stats = await fs.stat(finalPath);
 
       await prisma.download.update({
         where: { id: downloadId },
@@ -189,7 +208,7 @@ async function processDownload(downloadId: string): Promise<void> {
           status: "completed",
           progress: 100,
           size: stats.size,
-          filePath: mp4Path,
+          filePath: finalPath,
           completedAt: new Date(),
         },
       });

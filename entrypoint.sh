@@ -30,18 +30,19 @@ echo "Running as user: $USER_NAME ($(id $USER_NAME))"
 
 # Ensure required directories exist with correct permissions
 DOWNLOAD_DIR="${DOWNLOAD_FOLDER_PATH:-/app/downloads}"
+TEMP_DIR="${DOWNLOAD_TEMP_PATH:-$DOWNLOAD_DIR/incomplete}"
 echo "Ensuring required directories exist..."
-mkdir -p /app/prisma/data "$DOWNLOAD_DIR"
-echo "Directories created/verified: /app/prisma/data, $DOWNLOAD_DIR"
+mkdir -p /app/prisma/data "$DOWNLOAD_DIR" "$TEMP_DIR"
+echo "Directories created/verified: /app/prisma/data, $DOWNLOAD_DIR, $TEMP_DIR"
 
 # Fix ownership and permissions of app directories
 echo "Setting ownership to $PUID:$PGID..."
 chown -R "$PUID:$PGID" /app/prisma/data /app/ffmpeg 2>/dev/null || echo "Note: Could not chown /app directories"
-chown -R "$PUID:$PGID" "$DOWNLOAD_DIR" 2>/dev/null || echo "Note: Could not chown $DOWNLOAD_DIR (this is normal for mounted volumes)"
+chown -R "$PUID:$PGID" "$DOWNLOAD_DIR" "$TEMP_DIR" 2>/dev/null || echo "Note: Could not chown download directories (this is normal for mounted volumes)"
 
 echo "Setting permissions..."
 chmod -R 755 /app/prisma/data 2>/dev/null || true
-chmod -R 755 "$DOWNLOAD_DIR" 2>/dev/null || echo "Note: Could not chmod $DOWNLOAD_DIR (this is normal for mounted volumes)"
+chmod -R 755 "$DOWNLOAD_DIR" "$TEMP_DIR" 2>/dev/null || echo "Note: Could not chmod download directories (this is normal for mounted volumes)"
 
 # Show actual permissions for debugging
 echo "Download directory permissions:"

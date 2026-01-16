@@ -77,7 +77,8 @@ npm start
 | `PGID` | Group ID für Dateiberechtigungen | `1001` |
 | `TVDB_API_KEY` | TVDB API Key (kostenpflichtig) | - |
 | `TMDB_API_KEY` | TMDB API Key (kostenlos) | - |
-| `DOWNLOAD_FOLDER_PATH` | Pfad für Downloads im Container | `/downloads` |
+| `DOWNLOAD_FOLDER_PATH` | Pfad für fertige Downloads im Container | `/downloads` |
+| `DOWNLOAD_TEMP_PATH` | Pfad für laufende Downloads (incomplete) | `$DOWNLOAD_FOLDER_PATH/incomplete` |
 | `DATABASE_URL` | SQLite Datenbank-Pfad | `file:./prisma/data/mediathekarr.db` |
 
 ### Metadaten-Quellen
