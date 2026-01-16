@@ -86,19 +86,13 @@ async function getTvdbToken(): Promise<string | null> {
   }
 }
 
-async function validateTvdbId(
-  tvdbId: number,
-  token: string
-): Promise<boolean> {
+async function validateTvdbId(tvdbId: number, token: string): Promise<boolean> {
   try {
-    const response = await fetch(
-      `https://api4.thetvdb.com/v4/series/${tvdbId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`https://api4.thetvdb.com/v4/series/${tvdbId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.status === 404) {
       return false;
@@ -122,7 +116,7 @@ async function validateTvdbIdViaTmdb(tvdbId: number): Promise<boolean> {
 
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/find/tv${tvdbId}?api_key=${TMDB_API_KEY}&external_source=tvdb_id`
+      `https://api.themoviedb.org/3/find/${tvdbId}?api_key=${TMDB_API_KEY}&external_source=tvdb_id`
     );
 
     if (!response.ok) {
@@ -157,10 +151,7 @@ function collectTvdbIds(): Map<number, string> {
     for (const ruleset of rulesets) {
       const existing = tvdbIds.get(ruleset.media.media_tvdbId);
       if (!existing) {
-        tvdbIds.set(
-          ruleset.media.media_tvdbId,
-          `rulesets.json: ${ruleset.media.media_name}`
-        );
+        tvdbIds.set(ruleset.media.media_tvdbId, `rulesets.json: ${ruleset.media.media_name}`);
       }
     }
   }
