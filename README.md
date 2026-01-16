@@ -1,6 +1,18 @@
 # MediathekArr
 
+[![GitHub Release](https://img.shields.io/github/v/release/mediathekarr/mediathekarr?logo=github&label=Release)](https://github.com/mediathekarr/mediathekarr/releases)
+[![License](https://img.shields.io/github/license/mediathekarr/mediathekarr?label=License)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/mediathekarr/mediathekarr?style=flat&logo=github&label=Stars)](https://github.com/mediathekarr/mediathekarr)
+[![GitHub Issues](https://img.shields.io/github/issues/mediathekarr/mediathekarr?logo=github&label=Issues)](https://github.com/mediathekarr/mediathekarr/issues)
+
 Mediathek-Indexer für Sonarr/Radarr - Automatischer Download von ARD, ZDF und anderen deutschen Mediatheken.
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="55%">
+  <img src="docs/screenshots/sonarr-integration.png" alt="Sonarr Integration" width="30%">
+</p>
 
 ## Features
 
@@ -212,6 +224,7 @@ data/
 
 ## Credits
 
+- [PCJones/MediathekArr](https://github.com/PCJones/MediathekArr) - Original .NET Implementation
 - [MediathekViewWeb](https://github.com/mediathekview/mediathekviewweb) - Mediathek API
 - [TheTVDB](https://thetvdb.com) - Metadaten API
 - [TMDB](https://www.themoviedb.org) - Metadaten API
