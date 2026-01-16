@@ -160,6 +160,24 @@ export async function deleteHistoryItem(nzoId: string, delFiles: boolean): Promi
   return true;
 }
 
+export async function retryDownload(nzoId: string): Promise<{ id: string } | null> {
+  const download = await prisma.download.findUnique({
+    where: { id: nzoId },
+  });
+
+  if (!download) {
+    return null;
+  }
+
+  // Delete the old entry
+  await prisma.download.delete({
+    where: { id: nzoId },
+  });
+
+  // Re-add to queue
+  return addToQueue(download.url, download.title, download.category);
+}
+
 export function getConfigResponse(): object {
   const downloadPath = process.env.DOWNLOAD_FOLDER_PATH || "/downloads";
 

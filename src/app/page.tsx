@@ -156,6 +156,32 @@ export default function Home() {
     }
   };
 
+  const handleDelete = async (nzoId: string, delFiles: boolean = false) => {
+    try {
+      const res = await fetch(
+        `/api/download?mode=history&name=delete&value=${nzoId}&del_files=${delFiles ? 1 : 0}`
+      );
+      const data = await res.json();
+      if (data.status) {
+        fetchQueue();
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const handleRetry = async (nzoId: string) => {
+    try {
+      const res = await fetch(`/api/download?mode=history&name=retry&value=${nzoId}`);
+      const data = await res.json();
+      if (data.status) {
+        fetchQueue();
+      }
+    } catch (error) {
+      console.error("Retry failed:", error);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "downloading":
@@ -279,6 +305,7 @@ export default function Home() {
                       <TableHead>Fortschritt</TableHead>
                       <TableHead>Größe</TableHead>
                       <TableHead>Verbleibend</TableHead>
+                      <TableHead className="w-24">Aktionen</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -291,6 +318,16 @@ export default function Home() {
                         <TableCell>{item.percentage}%</TableCell>
                         <TableCell>{item.mb} MB</TableCell>
                         <TableCell>{item.timeleft}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(item.nzo_id)}
+                            title="Abbrechen"
+                          >
+                            ✕
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -311,6 +348,7 @@ export default function Home() {
                       <TableHead>Status</TableHead>
                       <TableHead>Abgeschlossen</TableHead>
                       <TableHead>Größe</TableHead>
+                      <TableHead className="w-24">Aktionen</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -324,6 +362,26 @@ export default function Home() {
                           {new Date(item.completed * 1000).toLocaleDateString("de-DE")}
                         </TableCell>
                         <TableCell>{formatSize(item.bytes)}</TableCell>
+                        <TableCell className="flex gap-1">
+                          {item.status.toLowerCase() === "failed" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRetry(item.nzo_id)}
+                              title="Erneut versuchen"
+                            >
+                              ↻
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(item.nzo_id, true)}
+                            title="Löschen"
+                          >
+                            ✕
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

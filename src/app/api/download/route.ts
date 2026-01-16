@@ -6,6 +6,7 @@ import {
   addToQueue,
   parseNzbContent,
   getConfigResponse,
+  retryDownload,
 } from "@/services/download";
 
 export async function GET(request: NextRequest) {
@@ -33,6 +34,15 @@ export async function GET(request: NextRequest) {
         const isDeleted = await deleteHistoryItem(value, delFiles);
         if (isDeleted) {
           return NextResponse.json({ status: true });
+        }
+        return NextResponse.json({ status: false, error: "Item not found" }, { status: 404 });
+      }
+
+      // Handle retry
+      if (name === "retry" && value) {
+        const result = await retryDownload(value);
+        if (result) {
+          return NextResponse.json({ status: true, nzo_id: result.id });
         }
         return NextResponse.json({ status: false, error: "Item not found" }, { status: 404 });
       }
