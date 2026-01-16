@@ -5,7 +5,7 @@
  * and checks regex pattern validity
  */
 
-import Ajv from "ajv";
+import Ajv, { type AnySchema } from "ajv";
 import addFormats from "ajv-formats";
 import * as fs from "fs";
 import * as path from "path";
@@ -56,12 +56,8 @@ function loadJson<T>(filePath: string): T {
   return JSON.parse(content) as T;
 }
 
-function validateJsonSchema(
-  data: unknown,
-  schemaPath: string,
-  dataName: string
-): ValidationResult {
-  const schema = loadJson(schemaPath);
+function validateJsonSchema(data: unknown, schemaPath: string, dataName: string): ValidationResult {
+  const schema = loadJson<AnySchema>(schemaPath);
   const validate = ajv.compile(schema);
   const valid = validate(data);
 
@@ -76,10 +72,7 @@ function validateJsonSchema(
   return { valid: true, errors: [] };
 }
 
-function validateRegexPattern(
-  pattern: string,
-  context: string
-): string | null {
+function validateRegexPattern(pattern: string, context: string): string | null {
   try {
     new RegExp(pattern);
     return null;
@@ -88,10 +81,7 @@ function validateRegexPattern(
   }
 }
 
-function validateEmbeddedJson(
-  jsonString: string,
-  context: string
-): ValidationResult {
+function validateEmbeddedJson(jsonString: string, context: string): ValidationResult {
   try {
     JSON.parse(jsonString);
     return { valid: true, errors: [] };
@@ -111,27 +101,18 @@ function validateRulesetRegexPatterns(rulesets: Ruleset[]): ValidationResult {
 
     // Validate episodeRegex
     if (ruleset.episodeRegex && ruleset.episodeRegex.trim() !== "") {
-      const err = validateRegexPattern(
-        ruleset.episodeRegex,
-        `${context} episodeRegex`
-      );
+      const err = validateRegexPattern(ruleset.episodeRegex, `${context} episodeRegex`);
       if (err) errors.push(err);
     }
 
     // Validate seasonRegex
     if (ruleset.seasonRegex && ruleset.seasonRegex.trim() !== "") {
-      const err = validateRegexPattern(
-        ruleset.seasonRegex,
-        `${context} seasonRegex`
-      );
+      const err = validateRegexPattern(ruleset.seasonRegex, `${context} seasonRegex`);
       if (err) errors.push(err);
     }
 
     // Validate filters JSON and regex patterns within
-    const filtersResult = validateEmbeddedJson(
-      ruleset.filters,
-      `${context} filters`
-    );
+    const filtersResult = validateEmbeddedJson(ruleset.filters, `${context} filters`);
     if (!filtersResult.valid) {
       errors.push(...filtersResult.errors);
     } else {
@@ -139,10 +120,7 @@ function validateRulesetRegexPatterns(rulesets: Ruleset[]): ValidationResult {
       for (let i = 0; i < filters.length; i++) {
         const filter = filters[i];
         if (filter.type === "Regex" && typeof filter.value === "string") {
-          const err = validateRegexPattern(
-            filter.value,
-            `${context} filters[${i}]`
-          );
+          const err = validateRegexPattern(filter.value, `${context} filters[${i}]`);
           if (err) errors.push(err);
         }
       }
@@ -160,10 +138,7 @@ function validateRulesetRegexPatterns(rulesets: Ruleset[]): ValidationResult {
       for (let i = 0; i < titleRules.length; i++) {
         const rule = titleRules[i];
         if (rule.type === "regex" && rule.pattern) {
-          const err = validateRegexPattern(
-            rule.pattern,
-            `${context} titleRegexRules[${i}]`
-          );
+          const err = validateRegexPattern(rule.pattern, `${context} titleRegexRules[${i}]`);
           if (err) errors.push(err);
         }
       }
@@ -215,11 +190,7 @@ async function main(): Promise<void> {
     const shows = loadJson<Show[]>(showsPath);
 
     // Schema validation
-    const showsSchemaResult = validateJsonSchema(
-      shows,
-      showsSchemaPath,
-      "shows.json"
-    );
+    const showsSchemaResult = validateJsonSchema(shows, showsSchemaPath, "shows.json");
     if (!showsSchemaResult.valid) {
       allErrors.push(...showsSchemaResult.errors);
       hasErrors = true;
@@ -232,12 +203,8 @@ async function main(): Promise<void> {
       hasErrors = true;
     }
 
-    console.log(
-      `  Schema: ${showsSchemaResult.valid ? "PASS" : "FAIL"}`
-    );
-    console.log(
-      `  Duplicates: ${showsDuplicateResult.valid ? "PASS" : "FAIL"}`
-    );
+    console.log(`  Schema: ${showsSchemaResult.valid ? "PASS" : "FAIL"}`);
+    console.log(`  Duplicates: ${showsDuplicateResult.valid ? "PASS" : "FAIL"}`);
   } else {
     console.log("  shows.json not found, skipping...");
   }
@@ -251,11 +218,7 @@ async function main(): Promise<void> {
     const rulesets = loadJson<Ruleset[]>(rulesetsPath);
 
     // Schema validation
-    const rulesetsSchemaResult = validateJsonSchema(
-      rulesets,
-      rulesetsSchemaPath,
-      "rulesets.json"
-    );
+    const rulesetsSchemaResult = validateJsonSchema(rulesets, rulesetsSchemaPath, "rulesets.json");
     if (!rulesetsSchemaResult.valid) {
       allErrors.push(...rulesetsSchemaResult.errors);
       hasErrors = true;
@@ -275,12 +238,8 @@ async function main(): Promise<void> {
       hasErrors = true;
     }
 
-    console.log(
-      `  Schema: ${rulesetsSchemaResult.valid ? "PASS" : "FAIL"}`
-    );
-    console.log(
-      `  Duplicates: ${rulesetsDuplicateResult.valid ? "PASS" : "FAIL"}`
-    );
+    console.log(`  Schema: ${rulesetsSchemaResult.valid ? "PASS" : "FAIL"}`);
+    console.log(`  Duplicates: ${rulesetsDuplicateResult.valid ? "PASS" : "FAIL"}`);
     console.log(`  Regex patterns: ${regexResult.valid ? "PASS" : "FAIL"}`);
   } else {
     console.log("  rulesets.json not found, skipping...");
