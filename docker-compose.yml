@@ -1,0 +1,24 @@
+services:
+  mediathekarr:
+    build: .
+    # image: mediathekarr/mediathekarr:latest  # Uncomment when using pre-built image
+    container_name: mediathekarr
+    environment:
+      - TZ=Europe/Berlin
+      - TVDB_API_KEY=${TVDB_API_KEY}  # Required: Your TVDB API key
+      - DOWNLOAD_FOLDER_PATH=/downloads
+      - DOWNLOAD_FOLDER_PATH_MAPPING=/downloads/completed  # Path mapping for Sonarr/Radarr
+      - DATABASE_URL=file:./prisma/data/mediathekarr.db
+    volumes:
+      - ./data:/app/prisma/data          # Database persistence
+      - ./downloads:/app/downloads        # Temporary download folder
+      - ./ffmpeg:/app/ffmpeg              # FFmpeg binary cache
+    ports:
+      - "127.0.0.1:3000:3000"            # Change left side port as needed
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/download?mode=version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

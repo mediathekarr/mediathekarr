@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model TvdbSeries {
+  id         Int           @id
+  name       String
+  germanName String?
+  slug       String?
+  overview   String?
+  aliases    String?       // JSON array stored as string
+  firstAired DateTime?
+  cachedAt   DateTime      @default(now())
+  expiresAt  DateTime
+  episodes   TvdbEpisode[]
+}
+
+model TvdbEpisode {
+  id            Int         @id
+  seriesId      Int
+  seasonNumber  Int
+  episodeNumber Int
+  name          String?
+  aired         DateTime?
+  runtime       Int?
+  series        TvdbSeries  @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@index([seriesId, seasonNumber, episodeNumber])
+}
+
+model Download {
+  id          String    @id @default(uuid())
+  title       String
+  url         String
+  category    String
+  status      String    @default("queued")
+  progress    Int       @default(0)
+  filePath    String?
+  error       String?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+}
+
+model Config {
+  key   String @id
+  value String
+}

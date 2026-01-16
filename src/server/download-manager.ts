@@ -1,0 +1,271 @@
+import { prisma } from "@/lib/db";
+import { convertMp4ToMkv, ensureFfmpegExists } from "./ffmpeg";
+import * as fs from "fs/promises";
+import { createWriteStream } from "fs";
+import * as path from "path";
+
+const MAX_CONCURRENT_DOWNLOADS = 2;
+const DOWNLOAD_BASE_PATH = process.env.DOWNLOAD_FOLDER_PATH || path.join(process.cwd(), "downloads");
+
+// Semaphore implementation for limiting concurrent downloads
+class Semaphore {
+  private permits: number;
+  private queue: Array<() => void> = [];
+
+  constructor(permits: number) {
+    this.permits = permits;
+  }
+
+  async acquire(): Promise<void> {
+    if (this.permits > 0) {
+      this.permits--;
+      return;
+    }
+
+    return new Promise((resolve) => {
+      this.queue.push(resolve);
+    });
+  }
+
+  release(): void {
+    this.permits++;
+    const next = this.queue.shift();
+    if (next) {
+      this.permits--;
+      next();
+    }
+  }
+}
+
+const downloadSemaphore = new Semaphore(MAX_CONCURRENT_DOWNLOADS);
+let isProcessing = false;
+let processingPromise: Promise<void> | null = null;
+
+// Initialize FFmpeg on startup
+ensureFfmpegExists().catch(console.error);
+
+export async function startDownloadProcessing(): Promise<void> {
+  if (isProcessing) {
+    return processingPromise || Promise.resolve();
+  }
+
+  isProcessing = true;
+  processingPromise = processQueue();
+  await processingPromise;
+  isProcessing = false;
+  processingPromise = null;
+}
+
+async function processQueue(): Promise<void> {
+  while (true) {
+    // Get next queued download
+    const nextDownload = await prisma.download.findFirst({
+      where: { status: "queued" },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (!nextDownload) {
+      // No more items in queue
+      break;
+    }
+
+    // Start download in background (respecting semaphore)
+    processDownload(nextDownload.id).catch(console.error);
+
+    // Small delay to prevent tight loop
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
+async function processDownload(downloadId: string): Promise<void> {
+  await downloadSemaphore.acquire();
+
+  const startTime = Date.now();
+
+  try {
+    // Get download info
+    const download = await prisma.download.findUnique({
+      where: { id: downloadId },
+    });
+
+    if (!download || download.status !== "queued") {
+      return;
+    }
+
+    console.log(`[Download] Starting: ${download.title}`);
+    console.log(`[Download] URL: ${download.url}`);
+
+    // Mark as downloading
+    await prisma.download.update({
+      where: { id: downloadId },
+      data: { status: "downloading" },
+    });
+
+    // Create category directory
+    const categoryDir = path.join(DOWNLOAD_BASE_PATH, download.category);
+    await fs.mkdir(categoryDir, { recursive: true });
+
+    // Determine file extension from URL
+    const urlPath = new URL(download.url).pathname;
+    const fileExtension = path.extname(urlPath) || ".mp4";
+    const mp4Path = path.join(categoryDir, `${download.title}${fileExtension}`);
+
+    // Download the file
+    const downloadSuccess = await downloadFile(download.url, mp4Path, async (progress) => {
+      await prisma.download.update({
+        where: { id: downloadId },
+        data: { progress },
+      });
+    });
+
+    if (!downloadSuccess) {
+      await markAsFailed(downloadId, "Download failed");
+      return;
+    }
+
+    console.log(`[Download] File downloaded: ${mp4Path}`);
+
+    // Convert to MKV if it's an MP4
+    if (fileExtension === ".mp4") {
+      const mkvPath = path.join(categoryDir, `${download.title}.mkv`);
+
+      console.log(`[Download] Converting to MKV: ${mkvPath}`);
+
+      await prisma.download.update({
+        where: { id: downloadId },
+        data: { status: "converting" },
+      });
+
+      const conversionResult = await convertMp4ToMkv(mp4Path, mkvPath);
+
+      if (!conversionResult.success) {
+        await markAsFailed(downloadId, conversionResult.error || "Conversion failed");
+        return;
+      }
+
+      // Get file size
+      const stats = await fs.stat(mkvPath);
+
+      // Calculate storage path (may be mapped differently)
+      const downloadFolderMapping = process.env.DOWNLOAD_FOLDER_PATH_MAPPING;
+      const storagePath = downloadFolderMapping
+        ? path.join(downloadFolderMapping, download.category, `${download.title}.mkv`)
+        : mkvPath;
+
+      // Mark as completed
+      const downloadTime = Math.floor((Date.now() - startTime) / 1000);
+
+      await prisma.download.update({
+        where: { id: downloadId },
+        data: {
+          status: "completed",
+          progress: 100,
+          filePath: storagePath,
+          completedAt: new Date(),
+        },
+      });
+
+      console.log(
+        `[Download] Completed: ${download.title} (${Math.round(stats.size / 1024 / 1024)}MB in ${downloadTime}s)`
+      );
+    } else {
+      // Non-MP4 file, just mark as completed
+      const stats = await fs.stat(mp4Path);
+
+      await prisma.download.update({
+        where: { id: downloadId },
+        data: {
+          status: "completed",
+          progress: 100,
+          filePath: mp4Path,
+          completedAt: new Date(),
+        },
+      });
+
+      console.log(`[Download] Completed: ${download.title} (${Math.round(stats.size / 1024 / 1024)}MB)`);
+    }
+  } catch (error) {
+    console.error(`[Download] Error processing download ${downloadId}:`, error);
+    await markAsFailed(downloadId, error instanceof Error ? error.message : "Unknown error");
+  } finally {
+    downloadSemaphore.release();
+
+    // Check if there are more items to process
+    const hasMore = await prisma.download.count({
+      where: { status: "queued" },
+    });
+
+    if (hasMore > 0 && !isProcessing) {
+      startDownloadProcessing().catch(console.error);
+    }
+  }
+}
+
+async function markAsFailed(downloadId: string, error: string): Promise<void> {
+  await prisma.download.update({
+    where: { id: downloadId },
+    data: {
+      status: "failed",
+      error,
+      completedAt: new Date(),
+    },
+  });
+}
+
+async function downloadFile(
+  url: string,
+  destPath: string,
+  onProgress?: (percent: number) => Promise<void>
+): Promise<boolean> {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok || !response.body) {
+      console.error(`[Download] HTTP error: ${response.status} ${response.statusText}`);
+      return false;
+    }
+
+    const contentLength = parseInt(response.headers.get("content-length") || "0", 10);
+    const fileStream = createWriteStream(destPath);
+
+    const reader = response.body.getReader();
+    let downloadedBytes = 0;
+    let lastProgressUpdate = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      fileStream.write(Buffer.from(value));
+      downloadedBytes += value.length;
+
+      // Update progress (throttled to every 1%)
+      if (contentLength > 0 && onProgress) {
+        const percent = Math.floor((downloadedBytes / contentLength) * 100);
+        if (percent > lastProgressUpdate) {
+          lastProgressUpdate = percent;
+          await onProgress(percent);
+        }
+      }
+    }
+
+    fileStream.end();
+
+    return new Promise((resolve) => {
+      fileStream.on("finish", () => resolve(true));
+      fileStream.on("error", (err) => {
+        console.error(`[Download] Write error: ${err}`);
+        resolve(false);
+      });
+    });
+  } catch (error) {
+    console.error(`[Download] Error downloading file:`, error);
+    return false;
+  }
+}
+
+// Export for use in API routes
+export { processDownload };
