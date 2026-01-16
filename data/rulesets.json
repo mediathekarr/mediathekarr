@@ -1,0 +1,2092 @@
+[
+  {
+    "id": 7,
+    "mediaId": 2,
+    "topic": "Feuer & Flamme",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 2,
+      "media_name": "Feuer & Flamme",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt7995922",
+      "media_tvdbId": 329324
+    }
+  },
+  {
+    "id": 8,
+    "mediaId": 3,
+    "topic": "ZDF Magazin Royale",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"24\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^ZDF Magazin Royale vom (\\\\d{1,2}\\\\. \\\\w+ \\\\d{4})\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 3,
+      "media_name": "ZDF Magazin Royale",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13486352",
+      "media_tvdbId": 390284
+    }
+  },
+  {
+    "id": 19,
+    "mediaId": 4,
+    "topic": "heute-show",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^heute-show vom (\\\\d{1,2}\\\\. \\\\w+ \\\\d{4})\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 4,
+      "media_name": "Heute Show",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt1441143",
+      "media_tvdbId": 234791
+    }
+  },
+  {
+    "id": 29,
+    "mediaId": 32,
+    "topic": "Das Traumschiff",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(?<=Das Traumschiff:\\\\s*)\\\\S.*\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 32,
+      "media_name": "Das Traumschiff",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0207932",
+      "media_tvdbId": 133371
+    }
+  },
+  {
+    "id": 43,
+    "mediaId": 39,
+    "topic": "Bibi Blocksberg",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Bibi Blocksberg:\\\\s(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 39,
+      "media_name": "Bibi Blocksberg",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 84326
+    }
+  },
+  {
+    "id": 47,
+    "mediaId": 40,
+    "topic": "Bibi und Tina",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 40,
+      "media_name": "Bibi und Tina",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 85543
+    }
+  },
+  {
+    "id": 50,
+    "mediaId": 41,
+    "topic": "Meine Freundin Conni",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"7\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 41,
+      "media_name": "Meine Freundin Conni",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2194356",
+      "media_tvdbId": 259923
+    }
+  },
+  {
+    "id": 52,
+    "mediaId": 42,
+    "topic": "Lieselotte",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^\\\\d+\\\\.\\\\s(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 42,
+      "media_name": "Lieselotte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11359400",
+      "media_tvdbId": 383436
+    }
+  },
+  {
+    "id": 64,
+    "mediaId": 47,
+    "topic": "Das Gipfeltreffen",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"21\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\\\\w+\\\\s+\\\\((\\\\d+)\\\\)$\",\"value\":\"Folge \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\w+\\\\s+\\\\((\\\\d+)\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 47,
+      "media_name": "Das Gipfeltreffen",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13998708",
+      "media_tvdbId": 382536
+    }
+  },
+  {
+    "id": 67,
+    "mediaId": 48,
+    "topic": "Helene Fischer",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"122\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\(?S?((?:19|20)\\\\d{2})\\\\)?\",\"value\":\"Die Helene Fischer Show 2024\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 48,
+      "media_name": "Die Helene Fischer Show",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2474228",
+      "media_tvdbId": 321977
+    }
+  },
+  {
+    "id": 76,
+    "mediaId": 51,
+    "topic": "Neo Ragazzi",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 51,
+      "media_name": "Neo Ragazzi",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt28555750",
+      "media_tvdbId": 439547
+    }
+  },
+  {
+    "id": 78,
+    "mediaId": 52,
+    "topic": "Donna Leon",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"63\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "\\((\\d{1,3})\\)",
+    "seasonRegex": "S01",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 52,
+      "media_name": "Donna Leon",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0896667",
+      "media_tvdbId": 101211
+    }
+  },
+  {
+    "id": 82,
+    "mediaId": 53,
+    "topic": "Nachtstreife",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 53,
+      "media_name": "Nachtstreife",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt32502749",
+      "media_tvdbId": 390010
+    }
+  },
+  {
+    "id": 83,
+    "mediaId": 54,
+    "topic": "Leo da Vinci",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"9\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 54,
+      "media_name": "Leo da Vinci",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11521370",
+      "media_tvdbId": 370314
+    }
+  },
+  {
+    "id": 87,
+    "mediaId": 56,
+    "topic": "Sturm der Liebe",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "Episode\\s(\\d+)",
+    "seasonRegex": "",
+    "matchingStrategy": "ByAbsoluteEpisodeNumber",
+    "media": {
+      "media_id": 56,
+      "media_name": "Sturm der Liebe",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0479846",
+      "media_tvdbId": 176491
+    }
+  },
+  {
+    "id": 91,
+    "mediaId": 57,
+    "topic": "Die Sendung mit der Maus",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"21\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\b\\\\d{2}\\\\.\\\\d{2}\\\\.\\\\d{4}\\\\b\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 57,
+      "media_name": "Die Sendung mit der Maus",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0065345",
+      "media_tvdbId": 153241
+    }
+  },
+  {
+    "id": 92,
+    "mediaId": 58,
+    "topic": "Unser Sandmännchen",
+    "priority": 0,
+    "filters": "[]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(?<=Henry: )(.*?)(?= \\\\| Unser Sandm\\u00e4nnchen)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 58,
+      "media_name": "Jan & Henry",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3168736",
+      "media_tvdbId": 289772
+    }
+  },
+  {
+    "id": 95,
+    "mediaId": 59,
+    "topic": "In aller Freundschaft - Die jungen Ärzte",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 59,
+      "media_name": "In aller Freundschaft – Die jungen Ärzte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3833900",
+      "media_tvdbId": 291180
+    }
+  },
+  {
+    "id": 97,
+    "mediaId": 60,
+    "topic": "Die Anstalt",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"34\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\d{1,2}\\\\.\\\\s\\\\w+\\\\s\\\\d{4}\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 60,
+      "media_name": "Die Anstalt",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt4277128",
+      "media_tvdbId": 279577
+    }
+  },
+  {
+    "id": 98,
+    "mediaId": 61,
+    "topic": "Lass dich überwachen!",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"63\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 61,
+      "media_name": "Lass dich überwachen!",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "n/A",
+      "media_tvdbId": 345251
+    }
+  },
+  {
+    "id": 100,
+    "mediaId": 62,
+    "topic": "extra 3",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\b\\\\d{2}\\\\.\\\\d{2}\\\\.\\\\d{4}\\\\b\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 62,
+      "media_name": "Extra 3",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0073989",
+      "media_tvdbId": 255986
+    }
+  },
+  {
+    "id": 101,
+    "mediaId": 64,
+    "topic": "Der Bergdoktor",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"80\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"S(17|18)\",\"value\":\"\"}]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 64,
+      "media_name": "Der Bergdoktor (2008)",
+      "media_type": "show",
+      "media_tmdbId": 1177054,
+      "media_imdbId": null,
+      "media_tvdbId": 195681
+    }
+  },
+  {
+    "id": 102,
+    "mediaId": 65,
+    "topic": "Tiere suchen ein Zuhause",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(\\\\d{2}\\\\.\\\\d{2}\\\\.\\\\d{4})\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 65,
+      "media_name": "Tiere suchen ein Zuhause",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 445728
+    }
+  },
+  {
+    "id": 108,
+    "mediaId": 67,
+    "topic": "Vorstadtweiber",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "Staffel \\d+ \\((\\d+)\\/\\d+\\)",
+    "seasonRegex": "Staffel (\\d+)",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 67,
+      "media_name": "Vorstadtweiber",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt4352342",
+      "media_tvdbId": 290601
+    }
+  },
+  {
+    "id": 109,
+    "mediaId": 68,
+    "topic": "Fernsehfilme und Serien - Serien",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "Staffel \\d+ \\((\\d+)\\/\\d+\\)",
+    "seasonRegex": "Staffel (\\d+)",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 68,
+      "media_name": "Occupied - Die Besatzung",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt4192998",
+      "media_tvdbId": 299964
+    }
+  },
+  {
+    "id": 110,
+    "mediaId": 69,
+    "topic": "Mitternachtsspitzen",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"43\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 69,
+      "media_name": "Mitternachtsspitzen",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0473587",
+      "media_tvdbId": 355035
+    }
+  },
+  {
+    "id": 120,
+    "mediaId": 72,
+    "topic": "Schloss Einstein",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"15\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\"Folge \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(\\\\d{1,5})\\\\.[\\\\s]+\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 72,
+      "media_name": "Schloss Einstein",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0244361",
+      "media_tvdbId": 201891
+    }
+  },
+  {
+    "id": 121,
+    "mediaId": 73,
+    "topic": "Checker Can~ Checker Tobi und Checker Julian",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 73,
+      "media_name": "Checker Tobi",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3188510",
+      "media_tvdbId": 273716
+    }
+  },
+  {
+    "id": 123,
+    "mediaId": 74,
+    "topic": "Checker Reportagen",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"16\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 74,
+      "media_name": "Checker Julian",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13900240",
+      "media_tvdbId": 343891
+    }
+  },
+  {
+    "id": 125,
+    "mediaId": 75,
+    "topic": "Checker Reportagen",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 75,
+      "media_name": "Checker Can",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2071721",
+      "media_tvdbId": 254287
+    }
+  },
+  {
+    "id": 127,
+    "mediaId": 76,
+    "topic": "Checker Reportagen",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 76,
+      "media_name": "Checkerin Marina",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt35719276",
+      "media_tvdbId": 441454
+    }
+  },
+  {
+    "id": 129,
+    "mediaId": 77,
+    "topic": "Verrückt nach Meer",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"32\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^\\\\d+:\\\\s*(.+?)(?:\\\\s*\\\\([^)]*\\\\))?\\\\s*$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 77,
+      "media_name": "Verrückt nach Meer",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2361025",
+      "media_tvdbId": 254636
+    }
+  },
+  {
+    "id": 131,
+    "mediaId": 78,
+    "topic": "Ghosts",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 78,
+      "media_name": "Ghosts (DE)",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt32536158",
+      "media_tvdbId": 451668
+    }
+  },
+  {
+    "id": 132,
+    "mediaId": 79,
+    "topic": "Doppelhaushälfte",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"20\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 79,
+      "media_name": "Doppelhaushälfte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 417595
+    }
+  },
+  {
+    "id": 133,
+    "mediaId": 80,
+    "topic": "Boarders - Welcome to St. Gilbert's",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"32\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 80,
+      "media_name": "Boarders - Welcome to St. Gilbert's",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt21438656",
+      "media_tvdbId": 445992
+    }
+  },
+  {
+    "id": 134,
+    "mediaId": 81,
+    "topic": "Späti",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"17\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 81,
+      "media_name": "Späti",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt32641950",
+      "media_tvdbId": 462060
+    }
+  },
+  {
+    "id": 137,
+    "mediaId": 82,
+    "topic": "30 Tage Lust",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"20\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 82,
+      "media_name": "30 Tage Lust",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt31921149",
+      "media_tvdbId": 447160
+    }
+  },
+  {
+    "id": 139,
+    "mediaId": 83,
+    "topic": "Spielfilm|Filme im MDR|Fernsehfilm|Krimi und Thriller|Filme|Film|Kino - Filme|Filme in der ARD|Film im rbb",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 83,
+      "media_name": "Filme Allgemein",
+      "media_type": "movie",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": null
+    }
+  },
+  {
+    "id": 140,
+    "mediaId": 84,
+    "topic": "Doctor Who",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"15\"},{\"attribute\":\"duration\",\"type\":\"LowerThan\",\"value\":\"30\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 84,
+      "media_name": "Doctor Who",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0056751",
+      "media_tvdbId": 76107
+    }
+  },
+  {
+    "id": 142,
+    "mediaId": 85,
+    "topic": "Doctor Who",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"32\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 85,
+      "media_name": "Doctor Who (2005)",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0436992",
+      "media_tvdbId": 78804
+    }
+  },
+  {
+    "id": 144,
+    "mediaId": 86,
+    "topic": "Ida rettet die Welt",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"15\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 86,
+      "media_name": "Ida übernimmt Verantwortung",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt15290820",
+      "media_tvdbId": 412655
+    }
+  },
+  {
+    "id": 145,
+    "mediaId": 87,
+    "topic": "Terra X",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?) \\\\(\\\\S+\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 87,
+      "media_name": "Terra X",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 126301
+    }
+  },
+  {
+    "id": 147,
+    "mediaId": 88,
+    "topic": "Aktenzeichen XY... Ungelöst",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"59\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(\\\\d{1,2}\\\\.\\\\d{1,2}\\\\.\\\\d{4})\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 88,
+      "media_name": "Aktenzeichen XY ... ungelöst",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0131157",
+      "media_tvdbId": 255982
+    }
+  },
+  {
+    "id": 150,
+    "mediaId": 89,
+    "topic": "falsch, aber anders lustig",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 89,
+      "media_name": "falsch, aber anders lustig",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 457462
+    }
+  },
+  {
+    "id": 152,
+    "mediaId": 90,
+    "topic": "Wer weiß denn sowas?",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?)\\\\s+und\\\\s+\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\" & \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\s+und\\\\s+([^|]+?)(?:\\\\s*\\\\||$)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 90,
+      "media_name": "Wer weiß denn sowas?",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 298954
+    }
+  },
+  {
+    "id": 154,
+    "mediaId": 91,
+    "topic": "Sketch-History",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"15\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 91,
+      "media_name": "Sketch History - Neues von gestern",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt5369974",
+      "media_tvdbId": 301770
+    }
+  },
+  {
+    "id": 155,
+    "mediaId": 92,
+    "topic": "Elefant, Tiger & Co.",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\\\\((\\\\d+)\\\\)$\",\"value\":\"(\"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\((\\\\d+)\\\\)$\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\")\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 92,
+      "media_name": "Elefant, Tiger und Co.",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 249482
+    }
+  },
+  {
+    "id": 156,
+    "mediaId": 93,
+    "topic": "Legendäre Piraten",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 93,
+      "media_name": "Piraten: Die Geschichten hinter den Legenden",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 451126
+    }
+  },
+  {
+    "id": 157,
+    "mediaId": 94,
+    "topic": "Hubert ohne Staller",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"20\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 94,
+      "media_name": "Hubert und/ohne Staller",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 253327
+    }
+  },
+  {
+    "id": 159,
+    "mediaId": 95,
+    "topic": "Sherlock",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 95,
+      "media_name": "Sherlock",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 176941
+    }
+  },
+  {
+    "id": 4,
+    "mediaId": 1,
+    "topic": "Tatort",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"30\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"value\":\" - \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(?<=Tatort:\\\\s*)\\\\S.*\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 1,
+      "media_name": "Tatort",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0806910",
+      "media_tvdbId": 83214
+    }
+  },
+  {
+    "id": 16,
+    "mediaId": 3,
+    "topic": "ZDF Magazin Royale",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"24\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?: \\\\([^)]*\\\\))?$\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 3,
+      "media_name": "ZDF Magazin Royale",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13486352",
+      "media_tvdbId": 390284
+    }
+  },
+  {
+    "id": 26,
+    "mediaId": 31,
+    "topic": "Der Tatortreiniger",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"channel\",\"type\":\"ExactMatch\",\"value\":\"1\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 31,
+      "media_name": "Der Tatortreiniger",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 289561
+    }
+  },
+  {
+    "id": 36,
+    "mediaId": 32,
+    "topic": "Das Traumschiff",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?:\\\\s*\\\\([^)]*\\\\))?$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 32,
+      "media_name": "Das Traumschiff",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0207932",
+      "media_tvdbId": 133371
+    }
+  },
+  {
+    "id": 44,
+    "mediaId": 39,
+    "topic": "Bibi Blocksberg",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^\\\\d+\\\\.\\\\s(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 39,
+      "media_name": "Bibi Blocksberg",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 84326
+    }
+  },
+  {
+    "id": 48,
+    "mediaId": 40,
+    "topic": "Bibi und Tina",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^\\\\\\\\d+\\\\\\\\.\\\\\\\\s(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 40,
+      "media_name": "Bibi und Tina",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 85543
+    }
+  },
+  {
+    "id": 51,
+    "mediaId": 41,
+    "topic": "Meine Freundin Conni",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"7\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?) \\\\(\\\\S+\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 41,
+      "media_name": "Meine Freundin Conni",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2194356",
+      "media_tvdbId": 259923
+    }
+  },
+  {
+    "id": 53,
+    "mediaId": 42,
+    "topic": "Lieselotte",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?) \\\\(\\\\S+\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 42,
+      "media_name": "Lieselotte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11359400",
+      "media_tvdbId": 383436
+    }
+  },
+  {
+    "id": 65,
+    "mediaId": 47,
+    "topic": "Das Gipfeltreffen",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"21\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 47,
+      "media_name": "Das Gipfeltreffen",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13998708",
+      "media_tvdbId": 382536
+    }
+  },
+  {
+    "id": 68,
+    "mediaId": 48,
+    "topic": "Die Helene Fischer Show",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"122\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\(?S?((?:19|20)\\\\d{2})\\\\)?\",\"value\":\"Die Helene Fischer Show 2024\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 48,
+      "media_name": "Die Helene Fischer Show",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2474228",
+      "media_tvdbId": 321977
+    }
+  },
+  {
+    "id": 84,
+    "mediaId": 54,
+    "topic": "Leo da Vinci",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"9\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^\\\\d+\\\\.\\\\s*(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 54,
+      "media_name": "Leo da Vinci",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11521370",
+      "media_tvdbId": 370314
+    }
+  },
+  {
+    "id": 88,
+    "mediaId": 56,
+    "topic": "Sturm der Liebe",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "\\((\\d+)\\)",
+    "seasonRegex": "",
+    "matchingStrategy": "ByAbsoluteEpisodeNumber",
+    "media": {
+      "media_id": 56,
+      "media_name": "Sturm der Liebe",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0479846",
+      "media_tvdbId": 176491
+    }
+  },
+  {
+    "id": 93,
+    "mediaId": 58,
+    "topic": "Unser Sandmännchen",
+    "priority": 1,
+    "filters": "[]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"Henry: (.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 58,
+      "media_name": "Jan & Henry",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3168736",
+      "media_tvdbId": 289772
+    }
+  },
+  {
+    "id": 96,
+    "mediaId": 59,
+    "topic": "In aller Freundschaft - Die jungen Ärzte",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=Folge\\s)(\\d{1,4})(?=\\))",
+    "seasonRegex": "(?<=Staffel\\s)(\\d{1,4})(?=, Folge\\s\\d{1,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 59,
+      "media_name": "In aller Freundschaft – Die jungen Ärzte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3833900",
+      "media_tvdbId": 291180
+    }
+  },
+  {
+    "id": 122,
+    "mediaId": 73,
+    "topic": "Checker Reportagen",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 73,
+      "media_name": "Checker Tobi",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt3188510",
+      "media_tvdbId": 273716
+    }
+  },
+  {
+    "id": 124,
+    "mediaId": 74,
+    "topic": "Checker Can~ Checker Tobi und Checker Julian",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"16\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 74,
+      "media_name": "Checker Julian",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13900240",
+      "media_tvdbId": 343891
+    }
+  },
+  {
+    "id": 126,
+    "mediaId": 75,
+    "topic": "Checker Can~ Checker Tobi und Checker Julian",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 75,
+      "media_name": "Checker Can",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2071721",
+      "media_tvdbId": 254287
+    }
+  },
+  {
+    "id": 128,
+    "mediaId": 76,
+    "topic": "Checker Can~ Checker Tobi und Checker Julian",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 76,
+      "media_name": "Checkerin Marina",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt35719276",
+      "media_tvdbId": 441454
+    }
+  },
+  {
+    "id": 146,
+    "mediaId": 87,
+    "topic": "Säugetiere",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"(?=.*S\\u00e4ugetiere).*S01\\/E0(\\\\d)\",\"value\":\"S\\u00e4ugetiere (\"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(?=.*S\\u00e4ugetiere).*S01\\/E0(\\\\d)\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\")\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 87,
+      "media_name": "Terra X",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 126301
+    }
+  },
+  {
+    "id": 149,
+    "mediaId": 88,
+    "topic": "Aktenzeichen XY... Ungelöst",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"59\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(\\\\d{1,2}\\\\.\\\\s*(?:Januar|Februar|M\\u00e4rz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\\\\s*\\\\d{4})\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 88,
+      "media_name": "Aktenzeichen XY ... ungelöst",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0131157",
+      "media_tvdbId": 255982
+    }
+  },
+  {
+    "id": 153,
+    "mediaId": 60,
+    "topic": "Die Anstalt",
+    "priority": 1,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"34\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 60,
+      "media_name": "Die Anstalt",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt4277128",
+      "media_tvdbId": 279577
+    }
+  },
+  {
+    "id": 6,
+    "mediaId": 1,
+    "topic": "Tatort",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"value\":\" - \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\u00ab(.*?)\\u00bb\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 1,
+      "media_name": "Tatort",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0806910",
+      "media_tvdbId": 83214
+    }
+  },
+  {
+    "id": 46,
+    "mediaId": 39,
+    "topic": "Bibi Blocksberg",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?) \\\\(\\\\S+\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 39,
+      "media_name": "Bibi Blocksberg",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 84326
+    }
+  },
+  {
+    "id": 49,
+    "mediaId": 40,
+    "topic": "Bibi und Tina",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.+?) \\\\(\\\\S+\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 40,
+      "media_name": "Bibi und Tina",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 85543
+    }
+  },
+  {
+    "id": 54,
+    "mediaId": 42,
+    "topic": "Lieselotte",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"5\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 42,
+      "media_name": "Lieselotte",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11359400",
+      "media_tvdbId": 383436
+    }
+  },
+  {
+    "id": 59,
+    "mediaId": 31,
+    "topic": "Der Tatortreiniger",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"channel\",\"type\":\"ExactMatch\",\"value\":\"1\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "ItemTitleEqualsAirdate",
+    "media": {
+      "media_id": 31,
+      "media_name": "Der Tatortreiniger",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 289561
+    }
+  },
+  {
+    "id": 66,
+    "mediaId": 47,
+    "topic": "Das Gipfeltreffen",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"21\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\\\\w+\\\\s+\\\\((\\\\d+)\\\\)$\",\"value\":\"Das Gipfeltreffen \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\w+\\\\s+\\\\((\\\\d+)\\\\)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 47,
+      "media_name": "Das Gipfeltreffen",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13998708",
+      "media_tvdbId": 382536
+    }
+  },
+  {
+    "id": 85,
+    "mediaId": 54,
+    "topic": "Leo da Vinci",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"9\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^.*$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 54,
+      "media_name": "Leo da Vinci",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt11521370",
+      "media_tvdbId": 370314
+    }
+  },
+  {
+    "id": 89,
+    "mediaId": 56,
+    "topic": "Sturm der Liebe",
+    "priority": 2,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "Teil\\s(\\d+)",
+    "seasonRegex": "",
+    "matchingStrategy": "ByAbsoluteEpisodeNumber",
+    "media": {
+      "media_id": 56,
+      "media_name": "Sturm der Liebe",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0479846",
+      "media_tvdbId": 176491
+    }
+  },
+  {
+    "id": 3,
+    "mediaId": 1,
+    "topic": "Tatort",
+    "priority": 3,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"value\":\" - \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?:\\\\s*\\\\([^)]*\\\\))?$\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 1,
+      "media_name": "Tatort",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0806910",
+      "media_tvdbId": 83214
+    }
+  },
+  {
+    "id": 90,
+    "mediaId": 56,
+    "topic": "Sturm der Liebe",
+    "priority": 3,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "-\\s(\\d+)\\.",
+    "seasonRegex": "",
+    "matchingStrategy": "ByAbsoluteEpisodeNumber",
+    "media": {
+      "media_id": 56,
+      "media_name": "Sturm der Liebe",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0479846",
+      "media_tvdbId": 176491
+    }
+  },
+  {
+    "id": 70,
+    "mediaId": 1,
+    "topic": "Tatort",
+    "priority": 4,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"value\":\" - \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?:\\\\s*\\\\([^)]*\\\\))?$\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 1,
+      "media_name": "Tatort",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0806910",
+      "media_tvdbId": 83214
+    }
+  },
+  {
+    "id": 113,
+    "mediaId": 70,
+    "topic": "Frühling",
+    "priority": 5,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 70,
+      "media_name": "Frühling",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt7887026",
+      "media_tvdbId": 289363
+    }
+  },
+  {
+    "id": 17,
+    "mediaId": 6,
+    "topic": "In aller Freundschaft",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 6,
+      "media_name": "In aller Freundschaft",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0178142",
+      "media_tvdbId": 147521
+    }
+  },
+  {
+    "id": 18,
+    "mediaId": 3,
+    "topic": "ZDF Magazin Royale",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"24\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 3,
+      "media_name": "ZDF Magazin Royale",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt13486352",
+      "media_tvdbId": 390284
+    }
+  },
+  {
+    "id": 45,
+    "mediaId": 39,
+    "topic": "Bibi Blocksberg",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"18\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 39,
+      "media_name": "Bibi Blocksberg",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 84326
+    }
+  },
+  {
+    "id": 103,
+    "mediaId": 66,
+    "topic": "Löwenzahn",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"14\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 66,
+      "media_name": "Löwenzahn",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt135097",
+      "media_tvdbId": 84829
+    }
+  },
+  {
+    "id": 117,
+    "mediaId": 71,
+    "topic": "Der Schwarm",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 71,
+      "media_name": "Der Schwarm",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0808491",
+      "media_tvdbId": 400779
+    }
+  },
+  {
+    "id": 130,
+    "mediaId": 77,
+    "topic": "Verrückt nach Meer",
+    "priority": 10,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"32\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(?:Folge\\\\s*\\\\d+:\\\\s*)?(.+?)(?:\\\\s*\\\\([^)]*\\\\))?\\\\s*$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 77,
+      "media_name": "Verrückt nach Meer",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt2361025",
+      "media_tvdbId": 254636
+    }
+  },
+  {
+    "id": 55,
+    "mediaId": 6,
+    "topic": "In aller Freundschaft",
+    "priority": 11,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=Folge\\s)(\\d{1,4})(?=\\))",
+    "seasonRegex": "(?<=Staffel\\s)(\\d{1,4})(?=, Folge\\s\\d{1,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 6,
+      "media_name": "In aller Freundschaft",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0178142",
+      "media_tvdbId": 147521
+    }
+  },
+  {
+    "id": 105,
+    "mediaId": 66,
+    "topic": "Löwenzahn",
+    "priority": 11,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"14\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?) \\\\(\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 66,
+      "media_name": "Löwenzahn",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt135097",
+      "media_tvdbId": 84829
+    }
+  },
+  {
+    "id": 116,
+    "mediaId": 71,
+    "topic": "Der Schwarm",
+    "priority": 11,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=Folge\\s)(\\d{1,4})(?=\\))",
+    "seasonRegex": "(?<=Staffel\\s)(\\d{1,4})(?=, Folge\\s\\d{1,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 71,
+      "media_name": "Der Schwarm",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0808491",
+      "media_tvdbId": 400779
+    }
+  },
+  {
+    "id": 119,
+    "mediaId": 72,
+    "topic": "Schloss Einstein",
+    "priority": 11,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"15\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\"Folge \"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"\\\\((\\\\d{1,5})\\\\)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 72,
+      "media_name": "Schloss Einstein",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0244361",
+      "media_tvdbId": 201891
+    }
+  },
+  {
+    "id": 107,
+    "mediaId": 66,
+    "topic": "Löwenzahn",
+    "priority": 12,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"14\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"- (.*?)(?= \\\\()\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 66,
+      "media_name": "Löwenzahn",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt135097",
+      "media_tvdbId": 84829
+    }
+  },
+  {
+    "id": 104,
+    "mediaId": 66,
+    "topic": "Löwenzahn",
+    "priority": 15,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"14\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^.*? - (.*)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 66,
+      "media_name": "Löwenzahn",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt135097",
+      "media_tvdbId": 84829
+    }
+  },
+  {
+    "id": 106,
+    "mediaId": 66,
+    "topic": "Löwenzahn",
+    "priority": 16,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"14\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\" - \"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 66,
+      "media_name": "Löwenzahn",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt135097",
+      "media_tvdbId": 84829
+    }
+  },
+  {
+    "id": 56,
+    "mediaId": 6,
+    "topic": "In aller Freundschaft",
+    "priority": 20,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Folge \\\\d+: (.+)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 6,
+      "media_name": "In aller Freundschaft",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0178142",
+      "media_tvdbId": 147521
+    }
+  },
+  {
+    "id": 111,
+    "mediaId": 69,
+    "topic": "Mitternachtsspitzen",
+    "priority": 20,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"43\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\" 20\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 69,
+      "media_name": "Mitternachtsspitzen",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0473587",
+      "media_tvdbId": 355035
+    }
+  },
+  {
+    "id": 112,
+    "mediaId": 70,
+    "topic": "Frühling",
+    "priority": 20,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"(.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 70,
+      "media_name": "Frühling",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt7887026",
+      "media_tvdbId": 289363
+    }
+  },
+  {
+    "id": 69,
+    "mediaId": 32,
+    "topic": "Das Traumschiff",
+    "priority": 21,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?= - Retro-Folge von \\\\d{4}(?: \\\\(|$))\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 32,
+      "media_name": "Das Traumschiff",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0207932",
+      "media_tvdbId": 133371
+    }
+  },
+  {
+    "id": 73,
+    "mediaId": 6,
+    "topic": "In aller Freundschaft",
+    "priority": 21,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"35\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Folge \\\\d+: (.+)$\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 6,
+      "media_name": "In aller Freundschaft",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0178142",
+      "media_tvdbId": 147521
+    }
+  },
+  {
+    "id": 37,
+    "mediaId": 32,
+    "topic": "Das Traumschiff",
+    "priority": 22,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"^(.*?)(?= - Retro-Folge von \\\\d{4}(?: \\\\(|$))\",\"value\":\"(\"},{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^(.*?)(?= - Retro-Folge von \\\\d{4}(?: \\\\(|$))\",\"value\":\"\"},{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\")\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleIncludes",
+    "media": {
+      "media_id": 32,
+      "media_name": "Das Traumschiff",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0207932",
+      "media_tvdbId": 133371
+    }
+  },
+  {
+    "id": 115,
+    "mediaId": 71,
+    "topic": "Der Schwarm",
+    "priority": 30,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"31\"},{\"attribute\":\"title\",\"type\":\"Regex\",\"value\":\"^(?!.*Staffel).*\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "^Folge\\s+(\\d+)(?:\\s+\\(.*\\))?$",
+    "seasonRegex": "S01",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 71,
+      "media_name": "Der Schwarm",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0808491",
+      "media_tvdbId": 400779
+    }
+  },
+  {
+    "id": 114,
+    "mediaId": 70,
+    "topic": "Film",
+    "priority": 40,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"50\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"Fr\\u00fchling - (.*)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 70,
+      "media_name": "Frühling",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt7887026",
+      "media_tvdbId": 289363
+    }
+  },
+  {
+    "id": 80,
+    "mediaId": 52,
+    "topic": "Donna Leon",
+    "priority": 50,
+    "filters": "[{\"attribute\":\"title\",\"type\":\"Contains\",\"value\":\"Donna Leon\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Donna Leon - (.+?)(?=\\\\s*$|\\\\s-\\\\(|\\\\s-)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 52,
+      "media_name": "Donna Leon",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0896667",
+      "media_tvdbId": 101211
+    }
+  },
+  {
+    "id": 81,
+    "mediaId": 52,
+    "topic": "Spielfilm|Filme im MDR|Fernsehfilm",
+    "priority": 61,
+    "filters": "[{\"attribute\":\"title\",\"type\":\"Contains\",\"value\":\"Donna Leon\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Donna Leon - (.+?)(?=\\\\s*$|\\\\s-\\\\(|\\\\s-)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 52,
+      "media_name": "Donna Leon",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0896667",
+      "media_tvdbId": 101211
+    }
+  },
+  {
+    "id": 79,
+    "mediaId": 52,
+    "topic": "Fernsehfilm|Krimi und Thriller",
+    "priority": 70,
+    "filters": "[{\"attribute\":\"title\",\"type\":\"Contains\",\"value\":\"Donna Leon\"}]",
+    "titleRegexRules": "[{\"type\":\"regex\",\"field\":\"title\",\"pattern\":\"^Donna Leon: (.+?)(?=\\\\s*$)\",\"value\":\"\"}]",
+    "episodeRegex": "",
+    "seasonRegex": "",
+    "matchingStrategy": "ItemTitleExact",
+    "media": {
+      "media_id": 52,
+      "media_name": "Donna Leon",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt0896667",
+      "media_tvdbId": 101211
+    }
+  },
+  {
+    "id": 77,
+    "mediaId": 51,
+    "topic": "Neo Ragazzi",
+    "priority": 99,
+    "filters": "[{\"attribute\":\"title\",\"type\":\"Contains\",\"value\":\"Sex bei Olympia, Pubert\\u00e4t am Filmset und Rauchen im Vatikan\"},{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"40\"}]",
+    "titleRegexRules": "[{\"type\":\"static\",\"field\":\"title\",\"pattern\":\"\",\"value\":\"(S03\\/E01)\"}]",
+    "episodeRegex": "(?<=\\bS\\d{2,4}\\s*/E)(\\d{2,4})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2,4})(?=\\s*/E\\d{2,4})",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 51,
+      "media_name": "Neo Ragazzi",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "tt28555750",
+      "media_tvdbId": 439547
+    }
+  },
+  {
+    "id": 99,
+    "mediaId": 61,
+    "topic": "Lass dich überwachen!",
+    "priority": 99,
+    "filters": "[{\"attribute\":\"description\",\"type\":\"Contains\",\"value\":\"im Herbst 2024 ist das Internet voll\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "E02",
+    "seasonRegex": "S2024",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 61,
+      "media_name": "Lass dich überwachen!",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": "n/A",
+      "media_tvdbId": 345251
+    }
+  },
+  {
+    "id": 1000,
+    "mediaId": 1000,
+    "topic": "Take the Money and Run",
+    "priority": 0,
+    "filters": "[{\"attribute\":\"duration\",\"type\":\"GreaterThan\",\"value\":\"30\"}]",
+    "titleRegexRules": "[]",
+    "episodeRegex": "(?<=E)(\\d{2})(?=\\))",
+    "seasonRegex": "(?<=S)(\\d{2})(?=/E)",
+    "matchingStrategy": "SeasonAndEpisodeNumber",
+    "media": {
+      "media_id": 1000,
+      "media_name": "Take the Money and Run",
+      "media_type": "show",
+      "media_tmdbId": null,
+      "media_imdbId": null,
+      "media_tvdbId": 472491
+    }
+  }
+]

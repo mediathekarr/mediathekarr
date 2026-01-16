@@ -1,0 +1,16 @@
+[
+  {
+    "tvdbId": 472491,
+    "name": "Take the Money and Run",
+    "germanName": "Take the Money and Run",
+    "aliases": [],
+    "episodes": [
+      { "name": "One Dream", "seasonNumber": 1, "episodeNumber": 1, "aired": "2026-01-13" },
+      { "name": "One Coin", "seasonNumber": 1, "episodeNumber": 2, "aired": "2026-01-13" },
+      { "name": "One Wish", "seasonNumber": 1, "episodeNumber": 3, "aired": "2026-01-13" },
+      { "name": "One Chance", "seasonNumber": 1, "episodeNumber": 4, "aired": "2026-01-13" },
+      { "name": "One Mistake", "seasonNumber": 1, "episodeNumber": 5, "aired": "2026-01-13" },
+      { "name": "One Truth", "seasonNumber": 1, "episodeNumber": 6, "aired": "2026-01-13" }
+    ]
+  }
+]

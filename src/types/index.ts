@@ -79,12 +79,12 @@ export interface Ruleset {
 }
 
 export interface Media {
-  id: number;
-  tvdbId: number;
-  tmdbId: number | null;
-  imdbId: string | null;
-  title: string;
-  type: string;
+  media_id: number;
+  media_name: string;
+  media_type: string;
+  media_tvdbId: number;
+  media_tmdbId: number | null;
+  media_imdbId: string | null;
 }
 
 export enum MatchingStrategy {
