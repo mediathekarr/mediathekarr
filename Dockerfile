@@ -5,8 +5,9 @@ WORKDIR /app
 # Install dependencies needed for native modules
 RUN apk add --no-cache libc6-compat
 
-# Copy package files
+# Copy package files and prisma schema (needed for postinstall)
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
 RUN npm ci
 
 # Stage 2: Builder
