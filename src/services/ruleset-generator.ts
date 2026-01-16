@@ -3,14 +3,23 @@ import type { Ruleset, TvdbData, ApiResultItem } from "@/types";
 
 // Common German show name patterns in MediathekView
 const SEASON_EPISODE_PATTERNS = [
-  /\(S(\d{2})\/E(\d{2})\)/, // (S01/E01)
-  /S(\d{2})E(\d{2})/, // S01E01
+  /\(S(\d{1,4})\/E(\d{1,4})\)/, // (S01/E01) or (S1/E1)
+  /\bS(\d{1,4})E(\d{1,4})\b/, // S01E01
   /Staffel\s*(\d+).*Folge\s*(\d+)/i, // Staffel 1 Folge 1
+  /Staffel\s*(\d+).*Episode\s*(\d+)/i, // Staffel 1 Episode 1
 ];
 
 const DATE_PATTERNS = [
   /vom\s+(\d{1,2}\.\s*\w+\s*\d{4})/, // vom 15. Januar 2024
-  /(\d{1,2}\.\d{1,2}\.\d{4})/, // 15.01.2024
+  /vom\s+(\d{1,2}\.\d{1,2}\.\d{4})/, // vom 15.01.2024
+  /\b(\d{1,2}\.\d{1,2}\.\d{4})\b/, // 15.01.2024 (standalone)
+  /\b(\d{1,2}\.\s*\w+\s*\d{4})\b/, // 15. Januar 2024 (standalone)
+];
+
+const ABSOLUTE_EPISODE_PATTERNS = [
+  /Episode\s*(\d+)/i, // Episode 123
+  /(?<!\/)Folge\s*(\d+)/i, // Folge 123 (but not after / as in S01/E01 Folge)
+  /Teil\s*(\d+)/i, // Teil 123
 ];
 
 interface MediathekSearchResult {
@@ -103,22 +112,36 @@ function findBestMatchingTopic(results: ApiResultItem[], showInfo: TvdbData): st
   return null;
 }
 
+interface StrategyAnalysis {
+  seasonEpisodeCount: number;
+  dateCount: number;
+  absoluteEpisodeCount: number;
+  topicPrefixCount: number;
+  colonSeparatorCount: number;
+}
+
 /**
- * Detect the best matching strategy based on sample results
+ * Analyze title patterns in results
  */
-function detectMatchingStrategy(results: ApiResultItem[]): string {
-  if (results.length === 0) return "SeasonAndEpisodeNumber";
+function analyzeResults(results: ApiResultItem[], topic: string): StrategyAnalysis {
+  const analysis: StrategyAnalysis = {
+    seasonEpisodeCount: 0,
+    dateCount: 0,
+    absoluteEpisodeCount: 0,
+    topicPrefixCount: 0,
+    colonSeparatorCount: 0,
+  };
 
-  let seasonEpisodeCount = 0;
-  let dateCount = 0;
+  const topicLower = topic.toLowerCase();
 
-  for (const result of results.slice(0, 10)) {
+  for (const result of results.slice(0, 15)) {
     const title = result.title;
+    const titleLower = title.toLowerCase();
 
     // Check for season/episode patterns
     for (const pattern of SEASON_EPISODE_PATTERNS) {
       if (pattern.test(title)) {
-        seasonEpisodeCount++;
+        analysis.seasonEpisodeCount++;
         break;
       }
     }
@@ -126,29 +149,90 @@ function detectMatchingStrategy(results: ApiResultItem[]): string {
     // Check for date patterns
     for (const pattern of DATE_PATTERNS) {
       if (pattern.test(title)) {
-        dateCount++;
+        analysis.dateCount++;
         break;
       }
     }
+
+    // Check for absolute episode patterns
+    for (const pattern of ABSOLUTE_EPISODE_PATTERNS) {
+      if (pattern.test(title)) {
+        analysis.absoluteEpisodeCount++;
+        break;
+      }
+    }
+
+    // Check if title starts with topic name (e.g., "Weltspiegel extra: ...")
+    if (titleLower.startsWith(topicLower)) {
+      analysis.topicPrefixCount++;
+    }
+
+    // Check for colon separator pattern (e.g., "Topic: Episode Title")
+    if (title.includes(":") || title.includes(" - ")) {
+      analysis.colonSeparatorCount++;
+    }
   }
 
-  if (seasonEpisodeCount > dateCount && seasonEpisodeCount > 0) {
+  return analysis;
+}
+
+/**
+ * Detect the best matching strategy based on sample results
+ */
+function detectMatchingStrategy(results: ApiResultItem[], topic: string): string {
+  if (results.length === 0) return "ItemTitleIncludes";
+
+  const analysis = analyzeResults(results, topic);
+  const total = results.slice(0, 15).length;
+
+  console.log(
+    `[RulesetGenerator] Analysis: seasonEp=${analysis.seasonEpisodeCount}, date=${analysis.dateCount}, ` +
+      `absEp=${analysis.absoluteEpisodeCount}, topicPrefix=${analysis.topicPrefixCount}, colon=${analysis.colonSeparatorCount}`
+  );
+
+  // Clear season/episode pattern wins
+  if (analysis.seasonEpisodeCount >= 3 && analysis.seasonEpisodeCount > analysis.dateCount) {
     console.log(
-      `[RulesetGenerator] Detected strategy: SeasonAndEpisodeNumber (${seasonEpisodeCount} matches)`
+      `[RulesetGenerator] Detected strategy: SeasonAndEpisodeNumber (${analysis.seasonEpisodeCount}/${total} matches)`
     );
     return "SeasonAndEpisodeNumber";
   }
 
-  if (dateCount > 0) {
+  // Clear date pattern wins
+  if (analysis.dateCount >= 3 && analysis.dateCount > analysis.seasonEpisodeCount) {
     console.log(
-      `[RulesetGenerator] Detected strategy: ItemTitleEqualsAirdate (${dateCount} matches)`
+      `[RulesetGenerator] Detected strategy: ItemTitleEqualsAirdate (${analysis.dateCount}/${total} matches)`
     );
     return "ItemTitleEqualsAirdate";
   }
 
-  // Default to exact title matching
-  console.log("[RulesetGenerator] Detected strategy: ItemTitleExact (default)");
-  return "ItemTitleExact";
+  // Absolute episode number pattern (daily shows like Sturm der Liebe)
+  if (analysis.absoluteEpisodeCount >= 3) {
+    console.log(
+      `[RulesetGenerator] Detected strategy: ByAbsoluteEpisodeNumber (${analysis.absoluteEpisodeCount}/${total} matches)`
+    );
+    return "ByAbsoluteEpisodeNumber";
+  }
+
+  // Topic prefix with colon separator suggests extractable episode titles
+  // Lower threshold - if at least 20% have topic prefix and 30% have colon separator
+  if (analysis.topicPrefixCount >= 3 && analysis.colonSeparatorCount >= total * 0.3) {
+    console.log(
+      `[RulesetGenerator] Detected strategy: ItemTitleExact (topic prefix pattern, ${analysis.topicPrefixCount}/${total})`
+    );
+    return "ItemTitleExact";
+  }
+
+  // Default to ItemTitleIncludes - most flexible for matching
+  console.log(`[RulesetGenerator] Detected strategy: ItemTitleIncludes (default fallback)`);
+  return "ItemTitleIncludes";
+}
+
+/**
+ * Escape special regex characters in a string
+ */
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -156,22 +240,35 @@ function detectMatchingStrategy(results: ApiResultItem[]): string {
  */
 function generateRegexPatterns(
   results: ApiResultItem[],
-  strategy: string
+  strategy: string,
+  topic: string
 ): { episodeRegex: string; seasonRegex: string; titleRegexRules: string } {
+  const escapedTopic = escapeRegex(topic);
+
   if (strategy === "SeasonAndEpisodeNumber") {
     // Check which pattern is used
     for (const result of results.slice(0, 5)) {
-      if (/\(S\d{2}\/E\d{2}\)/.test(result.title)) {
+      // (S01/E01) pattern
+      if (/\(S\d{1,4}\/E\d{1,4}\)/.test(result.title)) {
         return {
-          episodeRegex: "(?<=E)(\\d{2})(?=\\))",
-          seasonRegex: "(?<=S)(\\d{2})(?=/E)",
+          episodeRegex: "(?<=E)(\\d{1,4})(?=\\))",
+          seasonRegex: "(?<=S)(\\d{1,4})(?=/E)",
           titleRegexRules: "[]",
         };
       }
-      if (/S\d{2}E\d{2}/.test(result.title)) {
+      // S01E01 pattern
+      if (/\bS\d{1,4}E\d{1,4}\b/.test(result.title)) {
         return {
-          episodeRegex: "(?<=E)(\\d{2})",
-          seasonRegex: "(?<=S)(\\d{2})(?=E)",
+          episodeRegex: "(?<=E)(\\d{1,4})",
+          seasonRegex: "(?<=S)(\\d{1,4})(?=E)",
+          titleRegexRules: "[]",
+        };
+      }
+      // Staffel X Folge Y pattern
+      if (/Staffel\s*\d+.*Folge\s*\d+/i.test(result.title)) {
+        return {
+          episodeRegex: "Folge\\s*(\\d+)",
+          seasonRegex: "Staffel\\s*(\\d+)",
           titleRegexRules: "[]",
         };
       }
@@ -181,9 +278,8 @@ function generateRegexPatterns(
   if (strategy === "ItemTitleEqualsAirdate") {
     // Try to detect date format
     for (const result of results.slice(0, 5)) {
-      const match = result.title.match(/vom\s+(\d{1,2}\.\s*\w+\s*\d{4})/);
-      if (match) {
-        const topic = result.topic;
+      // "vom 15. Januar 2024" pattern
+      if (/vom\s+\d{1,2}\.\s*\w+\s*\d{4}/.test(result.title)) {
         return {
           episodeRegex: "",
           seasonRegex: "",
@@ -191,7 +287,35 @@ function generateRegexPatterns(
             {
               type: "regex",
               field: "title",
-              pattern: `^${topic.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}.*vom\\s+(\\d{1,2}\\.\\s*\\w+\\s*\\d{4})`,
+              pattern: `vom\\s+(\\d{1,2}\\.\\s*\\w+\\s*\\d{4})`,
+            },
+          ]),
+        };
+      }
+      // "vom 15.01.2024" pattern
+      if (/vom\s+\d{1,2}\.\d{1,2}\.\d{4}/.test(result.title)) {
+        return {
+          episodeRegex: "",
+          seasonRegex: "",
+          titleRegexRules: JSON.stringify([
+            {
+              type: "regex",
+              field: "title",
+              pattern: `vom\\s+(\\d{1,2}\\.\\d{1,2}\\.\\d{4})`,
+            },
+          ]),
+        };
+      }
+      // Standalone date "15.01.2024" pattern
+      if (/\b\d{1,2}\.\d{1,2}\.\d{4}\b/.test(result.title)) {
+        return {
+          episodeRegex: "",
+          seasonRegex: "",
+          titleRegexRules: JSON.stringify([
+            {
+              type: "regex",
+              field: "title",
+              pattern: `(\\d{1,2}\\.\\d{1,2}\\.\\d{4})`,
             },
           ]),
         };
@@ -199,10 +323,74 @@ function generateRegexPatterns(
     }
   }
 
-  // Default patterns
+  if (strategy === "ByAbsoluteEpisodeNumber") {
+    // Check which absolute episode pattern is used
+    for (const result of results.slice(0, 5)) {
+      if (/Episode\s*\d+/i.test(result.title)) {
+        return {
+          episodeRegex: "Episode\\s*(\\d+)",
+          seasonRegex: "",
+          titleRegexRules: "[]",
+        };
+      }
+      if (/Folge\s*\d+/i.test(result.title)) {
+        return {
+          episodeRegex: "Folge\\s*(\\d+)",
+          seasonRegex: "",
+          titleRegexRules: "[]",
+        };
+      }
+      if (/Teil\s*\d+/i.test(result.title)) {
+        return {
+          episodeRegex: "Teil\\s*(\\d+)",
+          seasonRegex: "",
+          titleRegexRules: "[]",
+        };
+      }
+    }
+  }
+
+  if (strategy === "ItemTitleExact") {
+    // Generate title extraction regex for "Topic: Title" or "Topic - Title" patterns
+    for (const result of results.slice(0, 5)) {
+      // "Topic: Title" pattern
+      if (result.title.includes(":")) {
+        return {
+          episodeRegex: "",
+          seasonRegex: "",
+          titleRegexRules: JSON.stringify([
+            {
+              type: "regex",
+              field: "title",
+              pattern: `^${escapedTopic}[^:]*:\\s*(.+)`,
+              value: "",
+            },
+          ]),
+        };
+      }
+      // "Topic - Title" pattern
+      if (result.title.includes(" - ")) {
+        return {
+          episodeRegex: "",
+          seasonRegex: "",
+          titleRegexRules: JSON.stringify([
+            {
+              type: "regex",
+              field: "title",
+              pattern: `^${escapedTopic}[^-]*-\\s*(.+)`,
+              value: "",
+            },
+          ]),
+        };
+      }
+    }
+  }
+
+  // ItemTitleIncludes - no special patterns needed, just use empty regex
+  // The matching will be done by checking if episode title is contained in MediathekView title
   return {
-    episodeRegex: "(?<=E)(\\d{2})(?=\\))",
-    seasonRegex: "(?<=S)(\\d{2})(?=/E)",
+    episodeRegex: "",
+    seasonRegex: "",
     titleRegexRules: "[]",
   };
 }
@@ -318,8 +506,8 @@ async function generateRulesetFromResults(
 
   // Detect matching strategy
   const topicResults = results.filter((r) => r.topic === matchingTopic);
-  const strategy = detectMatchingStrategy(topicResults);
-  const patterns = generateRegexPatterns(topicResults, strategy);
+  const strategy = detectMatchingStrategy(topicResults, matchingTopic);
+  const patterns = generateRegexPatterns(topicResults, strategy, matchingTopic);
 
   // Create new ruleset
   console.log(
