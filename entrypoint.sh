@@ -34,9 +34,18 @@ echo "Ensuring required directories exist..."
 mkdir -p /app/prisma/data "$DOWNLOAD_DIR"
 echo "Directories created/verified: /app/prisma/data, $DOWNLOAD_DIR"
 
-# Fix ownership of app directories
-chown -R "$PUID:$PGID" /app/prisma/data "$DOWNLOAD_DIR" /app/ffmpeg 2>/dev/null || true
+# Fix ownership and permissions of app directories
+echo "Setting ownership to $PUID:$PGID..."
+chown -R "$PUID:$PGID" /app/prisma/data /app/ffmpeg 2>/dev/null || echo "Note: Could not chown /app directories"
+chown -R "$PUID:$PGID" "$DOWNLOAD_DIR" 2>/dev/null || echo "Note: Could not chown $DOWNLOAD_DIR (this is normal for mounted volumes)"
+
+echo "Setting permissions..."
 chmod -R 755 /app/prisma/data 2>/dev/null || true
+chmod -R 755 "$DOWNLOAD_DIR" 2>/dev/null || echo "Note: Could not chmod $DOWNLOAD_DIR (this is normal for mounted volumes)"
+
+# Show actual permissions for debugging
+echo "Download directory permissions:"
+ls -la "$DOWNLOAD_DIR" 2>&1 || echo "Cannot list $DOWNLOAD_DIR"
 
 # Run database migrations
 echo "Running database migrations..."
