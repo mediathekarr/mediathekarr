@@ -1,0 +1,5 @@
+node_modules
+.next
+prisma/data
+downloads
+ffmpeg

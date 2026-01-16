@@ -87,7 +87,7 @@ EXPOSE 6767
 # Environment variables
 ENV PORT=6767
 ENV HOSTNAME="0.0.0.0"
-ENV DATABASE_URL="file:./prisma/data/mediathekarr.db"
+ENV DATABASE_URL="file:/app/prisma/data/mediathekarr.db"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \

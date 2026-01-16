@@ -13,7 +13,10 @@ const XML_BUILDER = new Builder({
   renderOpts: { pretty: true },
 });
 
-export function generateAttributes(season: string | null, categoryValues: string[]): NewznabAttribute[] {
+export function generateAttributes(
+  season: string | null,
+  categoryValues: string[]
+): NewznabAttribute[] {
   const attributes: NewznabAttribute[] = [];
 
   for (const categoryValue of categoryValues) {
@@ -140,7 +143,11 @@ function getPaddedEpisode(episode: TvdbEpisode): string {
   return episode.episodeNumber.toString().padStart(2, "0");
 }
 
-function generateTitle(info: MatchedEpisodeInfo, quality: string, episodeType: EpisodeType): string {
+function generateTitle(
+  info: MatchedEpisodeInfo,
+  quality: string,
+  episodeType: EpisodeType
+): string {
   const episode = info.episode;
 
   if (episodeType === "daily") {
@@ -206,13 +213,29 @@ function createRssItems(
   url: string
 ): NewznabItem[] {
   const items: NewznabItem[] = [
-    createRssItem(info, quality, sizeMultiplier, category, categoryValues, url, "standard" as EpisodeType),
+    createRssItem(
+      info,
+      quality,
+      sizeMultiplier,
+      category,
+      categoryValues,
+      url,
+      "standard" as EpisodeType
+    ),
   ];
 
   // Also create daily type if season is a year
   if (info.episode.seasonNumber > 1950) {
     items.push(
-      createRssItem(info, quality, sizeMultiplier, category, categoryValues, url, "daily" as EpisodeType)
+      createRssItem(
+        info,
+        quality,
+        sizeMultiplier,
+        category,
+        categoryValues,
+        url,
+        "daily" as EpisodeType
+      )
     );
   }
 
@@ -225,19 +248,40 @@ export function generateRssItems(info: MatchedEpisodeInfo): NewznabItem[] {
 
   if (info.item.url_video_hd) {
     items.push(
-      ...createRssItems(info, "1080p", 1.6, "TV > HD", [...baseCategories, "5040", "2040"], info.item.url_video_hd)
+      ...createRssItems(
+        info,
+        "1080p",
+        1.6,
+        "TV > HD",
+        [...baseCategories, "5040", "2040"],
+        info.item.url_video_hd
+      )
     );
   }
 
   if (info.item.url_video) {
     items.push(
-      ...createRssItems(info, "720p", 1.0, "TV > HD", [...baseCategories, "5040", "2040"], info.item.url_video)
+      ...createRssItems(
+        info,
+        "720p",
+        1.0,
+        "TV > HD",
+        [...baseCategories, "5040", "2040"],
+        info.item.url_video
+      )
     );
   }
 
   if (info.item.url_video_low) {
     items.push(
-      ...createRssItems(info, "480p", 0.4, "TV > SD", [...baseCategories, "5030", "2030"], info.item.url_video_low)
+      ...createRssItems(
+        info,
+        "480p",
+        0.4,
+        "TV > SD",
+        [...baseCategories, "5030", "2030"],
+        info.item.url_video_low
+      )
     );
   }
 
@@ -298,10 +342,7 @@ export function getCapabilitiesXml(): string {
         category: [
           {
             $: { id: "5000", name: "TV" },
-            subcat: [
-              { $: { id: "5030", name: "TV/SD" } },
-              { $: { id: "5040", name: "TV/HD" } },
-            ],
+            subcat: [{ $: { id: "5030", name: "TV/SD" } }, { $: { id: "5040", name: "TV/HD" } }],
           },
           {
             $: { id: "2000", name: "Movies" },

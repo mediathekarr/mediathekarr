@@ -241,9 +241,7 @@ export default function Home() {
                         <Badge variant="outline" className="text-xs">
                           {result.channel}
                         </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {result.topic}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{result.topic}</span>
                       </div>
                       <h3 className="font-medium truncate">{result.title}</h3>
                       <p className="text-sm text-muted-foreground">
@@ -251,10 +249,7 @@ export default function Home() {
                         {formatSize(result.size)}
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleDownload(result)}
-                    >
+                    <Button size="sm" onClick={() => handleDownload(result)}>
                       Download
                     </Button>
                   </div>
@@ -283,21 +278,15 @@ export default function Home() {
         <CardContent>
           <Tabs defaultValue="queue">
             <TabsList className="mb-4">
-              <TabsTrigger value="queue">
-                Queue ({queue.length})
-              </TabsTrigger>
-              <TabsTrigger value="history">
-                History ({history.length})
-              </TabsTrigger>
+              <TabsTrigger value="queue">Queue ({queue.length})</TabsTrigger>
+              <TabsTrigger value="history">History ({history.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="queue">
               {isLoadingQueue ? (
                 <p className="text-muted-foreground text-center py-8">Laden...</p>
               ) : queue.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  Keine aktiven Downloads
-                </p>
+                <p className="text-muted-foreground text-center py-8">Keine aktiven Downloads</p>
               ) : (
                 <Table>
                   <TableHeader>
@@ -358,9 +347,7 @@ export default function Home() {
                   <TableBody>
                     {history.map((item) => (
                       <TableRow key={item.nzo_id}>
-                        <TableCell className="font-medium max-w-xs truncate">
-                          {item.name}
-                        </TableCell>
+                        <TableCell className="font-medium max-w-xs truncate">{item.name}</TableCell>
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
                         <TableCell>
                           {new Date(item.completed * 1000).toLocaleDateString("de-DE")}

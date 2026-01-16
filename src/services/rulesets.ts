@@ -30,7 +30,9 @@ export async function loadRulesets(): Promise<void> {
       );
     }
 
-    console.log(`[Rulesets] Loaded ${allRulesets.length} rulesets for ${rulesetsByTopic.size} topics from local file`);
+    console.log(
+      `[Rulesets] Loaded ${allRulesets.length} rulesets for ${rulesetsByTopic.size} topics from local file`
+    );
   } catch (error) {
     console.error("[Rulesets] Error loading rulesets from local file:", error);
   }

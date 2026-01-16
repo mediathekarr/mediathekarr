@@ -52,7 +52,9 @@ export async function GET(request: NextRequest) {
 
   // Handle search requests
   if (t === "tvsearch" || t === "search" || t === "movie") {
-    console.log(`[Newznab] Search request: t=${t}, q=${q}, tvdbid=${tvdbid}, season=${season}, episode=${episode}`);
+    console.log(
+      `[Newznab] Search request: t=${t}, q=${q}, tvdbid=${tvdbid}, season=${season}, episode=${episode}`
+    );
 
     try {
       // Search by TVDB ID
@@ -61,7 +63,9 @@ export async function GET(request: NextRequest) {
         console.log(`[Newznab] Searching by TVDB ID: ${parsedTvdbId}`);
         if (!isNaN(parsedTvdbId)) {
           const tvdbData = await getShowInfoByTvdbId(parsedTvdbId);
-          console.log(`[Newznab] TVDB lookup result: ${tvdbData ? `Found "${tvdbData.name}" (German: "${tvdbData.germanName}")` : "Not found"}`);
+          console.log(
+            `[Newznab] TVDB lookup result: ${tvdbData ? `Found "${tvdbData.name}" (German: "${tvdbData.germanName}")` : "Not found"}`
+          );
 
           if (!tvdbData) {
             return new NextResponse(serializeRss(getEmptyRssResult()), {

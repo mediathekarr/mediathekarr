@@ -5,7 +5,8 @@ import { createWriteStream } from "fs";
 import * as path from "path";
 
 const MAX_CONCURRENT_DOWNLOADS = 2;
-const DOWNLOAD_BASE_PATH = process.env.DOWNLOAD_FOLDER_PATH || path.join(process.cwd(), "downloads");
+const DOWNLOAD_BASE_PATH =
+  process.env.DOWNLOAD_FOLDER_PATH || path.join(process.cwd(), "downloads");
 
 // Semaphore implementation for limiting concurrent downloads
 class Semaphore {
@@ -111,17 +112,21 @@ async function processDownload(downloadId: string): Promise<void> {
     const mp4Path = path.join(categoryDir, `${download.title}${fileExtension}`);
 
     // Download the file
-    const downloadSuccess = await downloadFile(download.url, mp4Path, async (progress, downloadedBytes, totalBytes, speed) => {
-      await prisma.download.update({
-        where: { id: downloadId },
-        data: {
-          progress,
-          downloadedBytes,
-          totalSize: totalBytes,
-          speed,
-        },
-      });
-    });
+    const downloadSuccess = await downloadFile(
+      download.url,
+      mp4Path,
+      async (progress, downloadedBytes, totalBytes, speed) => {
+        await prisma.download.update({
+          where: { id: downloadId },
+          data: {
+            progress,
+            downloadedBytes,
+            totalSize: totalBytes,
+            speed,
+          },
+        });
+      }
+    );
 
     if (!downloadSuccess) {
       await markAsFailed(downloadId, "Download failed");
@@ -189,7 +194,9 @@ async function processDownload(downloadId: string): Promise<void> {
         },
       });
 
-      console.log(`[Download] Completed: ${download.title} (${Math.round(stats.size / 1024 / 1024)}MB)`);
+      console.log(
+        `[Download] Completed: ${download.title} (${Math.round(stats.size / 1024 / 1024)}MB)`
+      );
     }
   } catch (error) {
     console.error(`[Download] Error processing download ${downloadId}:`, error);
@@ -222,7 +229,12 @@ async function markAsFailed(downloadId: string, error: string): Promise<void> {
 async function downloadFile(
   url: string,
   destPath: string,
-  onProgress?: (percent: number, downloadedBytes: number, totalBytes: number, speed: number) => Promise<void>
+  onProgress?: (
+    percent: number,
+    downloadedBytes: number,
+    totalBytes: number,
+    speed: number
+  ) => Promise<void>
 ): Promise<boolean> {
   try {
     const response = await fetch(url);
