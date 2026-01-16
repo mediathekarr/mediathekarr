@@ -21,7 +21,7 @@ model TvdbSeries {
 }
 
 model TvdbEpisode {
-  id            Int         @id
+  id            Int         @id @default(autoincrement())
   seriesId      Int
   seasonNumber  Int
   episodeNumber Int

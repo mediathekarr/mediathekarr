@@ -221,11 +221,9 @@ async function processShowData(
       },
     });
 
-    let episodeId = tvdbId * 10000;
     for (const ep of episodes) {
       await tx.tvdbEpisode.create({
         data: {
-          id: episodeId++,
           seriesId: tvdbId,
           name: ep.name,
           aired: ep.aired,
