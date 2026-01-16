@@ -8,11 +8,10 @@ services:
       - TVDB_API_KEY=${TVDB_API_KEY}  # Required: Your TVDB API key
       - DOWNLOAD_FOLDER_PATH=/downloads
       - DOWNLOAD_FOLDER_PATH_MAPPING=/downloads/completed  # Path mapping for Sonarr/Radarr
-      - DATABASE_URL=file:./prisma/data/mediathekarr.db
+      - DATABASE_URL=file:/app/prisma/data/mediathekarr.db
     volumes:
       - ./data:/app/prisma/data          # Database persistence
       - ./downloads:/app/downloads        # Temporary download folder
-      - ./ffmpeg:/app/ffmpeg              # FFmpeg binary cache
     ports:
       - "127.0.0.1:6767:6767"            # Change left side port as needed
     restart: unless-stopped

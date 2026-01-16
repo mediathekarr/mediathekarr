@@ -41,7 +41,7 @@ RUN mkdir -p /app/standalone-out && \
 FROM node:22-alpine AS runner
 WORKDIR /app
 
-# Install runtime dependencies for FFmpeg extraction, user management, and DB init
+# Install runtime dependencies for FFmpeg, user management, and DB init
 RUN apk add --no-cache \
     tar \
     xz \
@@ -49,6 +49,7 @@ RUN apk add --no-cache \
     su-exec \
     shadow \
     sqlite \
+    ffmpeg \
     && rm -rf /var/cache/apk/*
 
 ENV NODE_ENV=production
@@ -74,7 +75,9 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY init-db.sql /app/init-db.sql
 
 # Create directories for data and downloads
+# Symlink system FFmpeg so the app finds it at expected location
 RUN mkdir -p /app/prisma/data /app/downloads /app/ffmpeg \
+    && ln -s /usr/bin/ffmpeg /app/ffmpeg/ffmpeg \
     && chown -R nextjs:nodejs /app
 
 # Copy entrypoint script
