@@ -26,8 +26,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 # Move standalone files to fixed location (folder name varies based on project dir)
-# Using /. to include hidden files like .next
-RUN mkdir -p /app/standalone-out && cp -r /app/.next/standalone/*/. /app/standalone-out/
+# Using tar to properly handle hidden files like .next
+RUN mkdir -p /app/standalone-out && \
+    ls -la /app/.next/standalone/ && \
+    PROJ_DIR=$(ls -d /app/.next/standalone/*/) && \
+    echo "Found project dir: $PROJ_DIR" && \
+    ls -la "$PROJ_DIR" && \
+    cd "$PROJ_DIR" && tar cf - . | tar xf - -C /app/standalone-out/ && \
+    ls -la /app/standalone-out/
 
 # Stage 3: Runner
 FROM node:22-alpine AS runner
