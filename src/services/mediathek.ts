@@ -1,6 +1,11 @@
 import { mediathekCache } from "@/lib/cache";
 import { getShowInfoByTvdbId } from "./shows";
-import { ensureRulesetsLoaded, getRulesetsForTopic, getRulesetsForTopicAndTvdbId, getAllTopics } from "./rulesets";
+import {
+  ensureRulesetsLoaded,
+  getRulesetsForTopic,
+  getRulesetsForTopicAndTvdbId,
+  getAllTopics,
+} from "./rulesets";
 import { generateRssItems, convertItemsToRss, serializeRss, getEmptyRssResult } from "./newznab";
 import type {
   ApiResultItem,
@@ -393,12 +398,16 @@ async function applyRulesetFilters(
     for (const topic of allTopics) {
       const rulesets = getRulesetsForTopicAndTvdbId(topic, tvdbData.id);
       if (rulesets.length > 0) {
-        console.log(`[Mediathek] Found ${rulesets.length} ruleset(s) for topic "${topic}" with tvdbId ${tvdbData.id}`);
+        console.log(
+          `[Mediathek] Found ${rulesets.length} ruleset(s) for topic "${topic}" with tvdbId ${tvdbData.id}`
+        );
         foundRulesetForTvdbId = true;
       }
     }
     if (!foundRulesetForTvdbId) {
-      console.log(`[Mediathek] WARNING: No rulesets found for tvdbId ${tvdbData.id} (${tvdbData.name})`);
+      console.log(
+        `[Mediathek] WARNING: No rulesets found for tvdbId ${tvdbData.id} (${tvdbData.name})`
+      );
     }
   }
 
@@ -416,7 +425,9 @@ async function applyRulesetFilters(
 
     // Log first few items to show what's being checked
     if (checkedCount < 5) {
-      console.log(`[Mediathek] Checking item: topic="${item.topic}", title="${item.title}", rulesets found: ${rulesets.length}`);
+      console.log(
+        `[Mediathek] Checking item: topic="${item.topic}", title="${item.title}", rulesets found: ${rulesets.length}`
+      );
       checkedCount++;
     }
 
@@ -486,7 +497,11 @@ function getDesiredEpisodes(
       if (year >= 1900 && year <= 2100) {
         const yearEpisodes = findEpisodesByAirYear(tvdbData, year);
         for (const ep of yearEpisodes) {
-          if (!desiredEpisodes.some((d) => d.seasonNumber === ep.seasonNumber && d.episodeNumber === ep.episodeNumber)) {
+          if (
+            !desiredEpisodes.some(
+              (d) => d.seasonNumber === ep.seasonNumber && d.episodeNumber === ep.episodeNumber
+            )
+          ) {
             desiredEpisodes.push(ep);
           }
         }
@@ -539,7 +554,9 @@ export async function fetchSearchResultsById(
   limit: number,
   offset: number
 ): Promise<string> {
-  console.log(`[Mediathek] fetchSearchResultsById: tvdbId=${tvdbData.id}, name="${tvdbData.name}", germanName="${tvdbData.germanName}", season=${season}, episode=${episodeNumber}`);
+  console.log(
+    `[Mediathek] fetchSearchResultsById: tvdbId=${tvdbData.id}, name="${tvdbData.name}", germanName="${tvdbData.germanName}", season=${season}, episode=${episodeNumber}`
+  );
 
   const cacheKey = `tvdb_${tvdbData.id}_${season ?? "null"}_${episodeNumber ?? "null"}_${limit}_${offset}`;
 
@@ -585,8 +602,10 @@ export async function fetchSearchResultsById(
     results = parsed.result?.results || [];
     console.log(`[Mediathek] API returned ${results.length} results`);
     if (results.length > 0) {
-      const uniqueTopics = [...new Set(results.map(r => r.topic))];
-      console.log(`[Mediathek] Unique topics in results: ${uniqueTopics.slice(0, 10).join(", ")}${uniqueTopics.length > 10 ? ` ... (${uniqueTopics.length} total)` : ""}`);
+      const uniqueTopics = [...new Set(results.map((r) => r.topic))];
+      console.log(
+        `[Mediathek] Unique topics in results: ${uniqueTopics.slice(0, 10).join(", ")}${uniqueTopics.length > 10 ? ` ... (${uniqueTopics.length} total)` : ""}`
+      );
     }
   } catch {
     console.log(`[Mediathek] Failed to parse API response`);

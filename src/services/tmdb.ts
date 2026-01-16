@@ -138,7 +138,11 @@ async function fetchAndCacheSeriesData(tvdbId: number, apiKey: string): Promise<
   }
 }
 
-async function processShowData(tvdbId: number, findData: TmdbFindResult, apiKey: string): Promise<TvdbData | null> {
+async function processShowData(
+  tvdbId: number,
+  findData: TmdbFindResult,
+  apiKey: string
+): Promise<TvdbData | null> {
   if (!findData.tv_results || findData.tv_results.length === 0) {
     console.log(`[TMDB] No show found for TVDB ID ${tvdbId}`);
     return null;
@@ -161,9 +165,7 @@ async function processShowData(tvdbId: number, findData: TmdbFindResult, apiKey:
 
   let germanName = details.name;
   if (details.translations?.translations) {
-    const germanTranslation = details.translations.translations.find(
-      (t) => t.iso_639_1 === "de"
-    );
+    const germanTranslation = details.translations.translations.find((t) => t.iso_639_1 === "de");
     if (germanTranslation?.data?.name) {
       germanName = germanTranslation.data.name;
     }
@@ -176,7 +178,10 @@ async function processShowData(tvdbId: number, findData: TmdbFindResult, apiKey:
     if (season.season_number === 0) continue;
 
     try {
-      const seasonUrl = getApiUrl(`/tv/${tmdbId}/season/${season.season_number}?language=de-DE`, apiKey);
+      const seasonUrl = getApiUrl(
+        `/tv/${tmdbId}/season/${season.season_number}?language=de-DE`,
+        apiKey
+      );
       const seasonResponse = await fetch(seasonUrl, { headers });
 
       if (seasonResponse.ok) {

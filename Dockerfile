@@ -41,13 +41,14 @@ RUN mkdir -p /app/standalone-out && \
 FROM node:22-alpine AS runner
 WORKDIR /app
 
-# Install runtime dependencies for FFmpeg extraction and user management
+# Install runtime dependencies for FFmpeg extraction, user management, and DB init
 RUN apk add --no-cache \
     tar \
     xz \
     wget \
     su-exec \
     shadow \
+    sqlite \
     && rm -rf /var/cache/apk/*
 
 ENV NODE_ENV=production
@@ -64,10 +65,13 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/standalone-out/ ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Copy Prisma files
+# Copy Prisma files (client only, no CLI)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy database init script
+COPY init-db.sql /app/init-db.sql
 
 # Create directories for data and downloads
 RUN mkdir -p /app/prisma/data /app/downloads /app/ffmpeg \
@@ -83,7 +87,7 @@ EXPOSE 6767
 # Environment variables
 ENV PORT=6767
 ENV HOSTNAME="0.0.0.0"
-ENV DATABASE_URL="file:./prisma/data/mediathekarr.db"
+ENV DATABASE_URL="file:/app/prisma/data/mediathekarr.db"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \

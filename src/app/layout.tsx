@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: "Mediathek indexer for Sonarr/Radarr",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" suppressHydrationWarning>
       <head>

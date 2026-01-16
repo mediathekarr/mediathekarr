@@ -9,19 +9,28 @@ echo "Starting with UID: $PUID, GID: $PGID"
 # Get or create group with desired GID
 GROUP_NAME=$(getent group "$PGID" | cut -d: -f1)
 if [ -z "$GROUP_NAME" ]; then
+    echo "Creating group 'appgroup' with GID $PGID"
     addgroup -g "$PGID" appgroup
     GROUP_NAME="appgroup"
+else
+    echo "Using existing group '$GROUP_NAME' for GID $PGID"
 fi
 
 # Get or create user with desired UID
 USER_NAME=$(getent passwd "$PUID" | cut -d: -f1)
 if [ -z "$USER_NAME" ]; then
+    echo "Creating user 'appuser' with UID $PUID in group $GROUP_NAME"
     adduser -u "$PUID" -G "$GROUP_NAME" -s /bin/sh -D appuser
     USER_NAME="appuser"
+else
+    echo "Using existing user '$USER_NAME' for UID $PUID"
 fi
+
+echo "Running as user: $USER_NAME ($(id $USER_NAME))"
 
 # Fix ownership of app directories
 chown -R "$PUID:$PGID" /app/prisma/data /app/downloads /app/ffmpeg 2>/dev/null || true
+chmod -R 755 /app/prisma/data 2>/dev/null || true
 
 # Run database migrations
 echo "Running database migrations..."
@@ -30,16 +39,16 @@ echo "Checking prisma directory..."
 ls -la /app/prisma/ 2>&1 || echo "Cannot list /app/prisma/"
 ls -la /app/prisma/data/ 2>&1 || echo "Cannot list /app/prisma/data/"
 
-echo "Attempting prisma migrate deploy..."
-if su-exec "$USER_NAME" npx prisma migrate deploy 2>&1; then
-    echo "Migration successful via migrate deploy"
+DB_PATH="/app/prisma/data/mediathekarr.db"
+
+echo "Initializing database at $DB_PATH..."
+if su-exec "$USER_NAME" sqlite3 "$DB_PATH" < /app/init-db.sql 2>&1; then
+    echo "Database initialized successfully"
+    # Ensure database file has correct permissions
+    chown "$PUID:$PGID" "$DB_PATH" 2>/dev/null || true
+    chmod 644 "$DB_PATH" 2>/dev/null || true
 else
-    echo "migrate deploy failed, trying db push..."
-    if su-exec "$USER_NAME" npx prisma db push --skip-generate 2>&1; then
-        echo "Migration successful via db push"
-    else
-        echo "WARNING: Both migration methods failed!"
-    fi
+    echo "WARNING: Database initialization failed!"
 fi
 
 echo "Database directory after migration:"

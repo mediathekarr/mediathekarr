@@ -48,3 +48,6 @@ docker-compose*
 # Documentation
 README.md
 *.md
+
+# Scripts (dev-only)
+scripts

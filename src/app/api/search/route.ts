@@ -50,35 +50,38 @@ export async function GET(request: NextRequest) {
 
     // Filter out m3u8 streams and transform results
     const results: SearchResult[] = items
-      .filter((item: { url_video: string; title: string }) =>
-        !item.url_video.endsWith(".m3u8") &&
-        !item.title.includes("Audiodeskription") &&
-        !item.title.includes("Hörfassung")
+      .filter(
+        (item: { url_video: string; title: string }) =>
+          !item.url_video.endsWith(".m3u8") &&
+          !item.title.includes("Audiodeskription") &&
+          !item.title.includes("Hörfassung")
       )
-      .map((item: {
-        channel: string;
-        topic: string;
-        title: string;
-        description: string;
-        filmlisteTimestamp: number;
-        duration: number;
-        size: number;
-        url_video: string;
-        url_video_hd: string;
-        url_website: string;
-      }) => ({
-        id: `${item.channel}-${item.topic}-${item.title}-${item.filmlisteTimestamp}`,
-        channel: item.channel,
-        topic: item.topic,
-        title: item.title,
-        description: item.description,
-        timestamp: item.filmlisteTimestamp,
-        duration: item.duration,
-        size: item.size,
-        url_video: item.url_video,
-        url_video_hd: item.url_video_hd || item.url_video,
-        url_website: item.url_website,
-      }));
+      .map(
+        (item: {
+          channel: string;
+          topic: string;
+          title: string;
+          description: string;
+          filmlisteTimestamp: number;
+          duration: number;
+          size: number;
+          url_video: string;
+          url_video_hd: string;
+          url_website: string;
+        }) => ({
+          id: `${item.channel}-${item.topic}-${item.title}-${item.filmlisteTimestamp}`,
+          channel: item.channel,
+          topic: item.topic,
+          title: item.title,
+          description: item.description,
+          timestamp: item.filmlisteTimestamp,
+          duration: item.duration,
+          size: item.size,
+          url_video: item.url_video,
+          url_video_hd: item.url_video_hd || item.url_video,
+          url_website: item.url_website,
+        })
+      );
 
     return NextResponse.json({ results });
   } catch (error) {

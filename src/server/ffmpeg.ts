@@ -11,7 +11,8 @@ const FFMPEG_PATH = path.join(FFMPEG_DIR, isWindows ? "ffmpeg.exe" : "ffmpeg");
 
 // FFmpeg download URLs
 const FFMPEG_WINDOWS_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
-const FFMPEG_LINUX_URL = "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz";
+const FFMPEG_LINUX_URL =
+  "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz";
 
 export function getFfmpegPath(): string {
   return FFMPEG_PATH;

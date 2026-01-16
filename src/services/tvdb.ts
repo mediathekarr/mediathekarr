@@ -170,7 +170,8 @@ async function fetchAndCacheSeriesData(tvdbId: number): Promise<TvdbData | null>
     const lastAired = series.lastAired ? new Date(series.lastAired) : new Date("1970-01-01");
 
     let cacheExpiry = new Date();
-    const daysDiff = (d1: Date, d2: Date) => Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
+    const daysDiff = (d1: Date, d2: Date) =>
+      Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
 
     if (
       daysDiff(lastUpdated, now) < 7 ||
@@ -184,7 +185,13 @@ async function fetchAndCacheSeriesData(tvdbId: number): Promise<TvdbData | null>
 
     // Map episodes
     const episodes: TvdbEpisode[] = (series.episodes || []).map(
-      (ep: { name?: string; aired?: string; runtime?: number; seasonNumber: number; number: number }) => ({
+      (ep: {
+        name?: string;
+        aired?: string;
+        runtime?: number;
+        seasonNumber: number;
+        number: number;
+      }) => ({
         name: ep.name || "",
         aired: ep.aired ? new Date(ep.aired) : null,
         runtime: ep.runtime || null,
