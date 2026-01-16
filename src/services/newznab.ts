@@ -15,7 +15,8 @@ const XML_BUILDER = new Builder({
 
 export function generateAttributes(
   season: string | null,
-  categoryValues: string[]
+  categoryValues: string[],
+  tvdbId?: number
 ): NewznabAttribute[] {
   const attributes: NewznabAttribute[] = [];
 
@@ -25,6 +26,10 @@ export function generateAttributes(
 
   if (season) {
     attributes.push({ name: "season", value: season });
+  }
+
+  if (tvdbId) {
+    attributes.push({ name: "tvdbid", value: tvdbId.toString() });
   }
 
   return attributes;
@@ -200,7 +205,7 @@ function createRssItem(
       length: adjustedSize,
       type: "application/x-nzb",
     },
-    attributes: generateAttributes(getPaddedSeason(info.episode), categoryValues),
+    attributes: generateAttributes(getPaddedSeason(info.episode), categoryValues, info.tvdbId),
   };
 }
 

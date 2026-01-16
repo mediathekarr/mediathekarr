@@ -126,6 +126,7 @@ export interface MatchedEpisodeInfo {
   item: ApiResultItem;
   showName: string;
   matchedTitle: string;
+  tvdbId: number;
 }
 
 // Newznab Types

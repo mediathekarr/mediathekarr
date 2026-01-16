@@ -282,6 +282,7 @@ async function matchesSeasonAndEpisode(
     item,
     showName: tvdbData.name || tvdbData.germanName || "",
     matchedTitle: `S${season}E${episode}`,
+    tvdbId: ruleset.media.media_tvdbId,
   };
 }
 
@@ -306,6 +307,7 @@ async function matchesItemTitleIncludes(
     item,
     showName: tvdbData.name || tvdbData.germanName || "",
     matchedTitle: constructedTitle,
+    tvdbId: ruleset.media.media_tvdbId,
   };
 }
 
@@ -353,6 +355,7 @@ async function matchesItemTitleExact(
     item,
     showName: tvdbData.name || tvdbData.germanName || "",
     matchedTitle: constructedTitle,
+    tvdbId: ruleset.media.media_tvdbId,
   };
 }
 
@@ -377,6 +380,7 @@ async function matchesItemTitleEqualsAirdate(
     item,
     showName: tvdbData.name || tvdbData.germanName || "",
     matchedTitle: constructedTitle,
+    tvdbId: ruleset.media.media_tvdbId,
   };
 }
 
