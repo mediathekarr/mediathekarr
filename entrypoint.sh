@@ -6,20 +6,22 @@ PGID=${PGID:-1001}
 
 echo "Starting with UID: $PUID, GID: $PGID"
 
-# Update group ID if different
-if [ "$(id -g nextjs)" != "$PGID" ]; then
-    delgroup nextjs 2>/dev/null || true
-    addgroup -g "$PGID" nextjs
+# Get or create group with desired GID
+GROUP_NAME=$(getent group "$PGID" | cut -d: -f1)
+if [ -z "$GROUP_NAME" ]; then
+    addgroup -g "$PGID" appgroup
+    GROUP_NAME="appgroup"
 fi
 
-# Update user ID if different
-if [ "$(id -u nextjs)" != "$PUID" ]; then
-    deluser nextjs 2>/dev/null || true
-    adduser -u "$PUID" -G nextjs -s /bin/sh -D nextjs
+# Get or create user with desired UID
+USER_NAME=$(getent passwd "$PUID" | cut -d: -f1)
+if [ -z "$USER_NAME" ]; then
+    adduser -u "$PUID" -G "$GROUP_NAME" -s /bin/sh -D appuser
+    USER_NAME="appuser"
 fi
 
 # Fix ownership of app directories
-chown -R nextjs:nextjs /app/prisma/data /app/downloads /app/ffmpeg 2>/dev/null || true
+chown -R "$PUID:$PGID" /app/prisma/data /app/downloads /app/ffmpeg 2>/dev/null || true
 
-# Run as nextjs user
-exec su-exec nextjs "$@"
+# Run as the user
+exec su-exec "$USER_NAME" "$@"
