@@ -25,6 +25,9 @@ RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
+# Move standalone files to fixed location (folder name varies based on project dir)
+RUN mkdir -p /app/standalone-out && cp -r /app/.next/standalone/*/* /app/standalone-out/
+
 # Stage 3: Runner
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -46,8 +49,8 @@ RUN adduser --system --uid 1001 nextjs
 # Copy public folder
 COPY --from=builder /app/public ./public
 
-# Copy standalone build (handle nested structure)
-COPY --from=builder /app/.next/standalone/mediathekarr-next/ ./
+# Copy standalone build
+COPY --from=builder /app/standalone-out/ ./
 COPY --from=builder /app/.next/static ./.next/static
 
 # Copy Prisma files
