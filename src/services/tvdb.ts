@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { tvdbCache } from "@/lib/cache";
+import { getSettings } from "@/lib/settings";
 import type { TvdbData, TvdbEpisode, TvdbAlias } from "@/types";
 
 const TVDB_API_URL = "https://api4.thetvdb.com/v4";
@@ -37,9 +38,12 @@ async function getToken(): Promise<string | null> {
 }
 
 async function refreshToken(): Promise<string | null> {
-  const apiKey = process.env.TVDB_API_KEY;
+  const settings = await getSettings(["api.tvdb.key", "api.tvdb.pin"]);
+  const apiKey = settings["api.tvdb.key"];
+  const pin = settings["api.tvdb.pin"];
+
   if (!apiKey) {
-    console.error("TVDB_API_KEY not configured");
+    console.error("TVDB API key not configured in settings");
     return null;
   }
 
@@ -47,7 +51,7 @@ async function refreshToken(): Promise<string | null> {
     const response = await fetch(`${TVDB_API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ apikey: apiKey }),
+      body: JSON.stringify({ apikey: apiKey, pin: pin || undefined }),
     });
 
     const data = await response.json();

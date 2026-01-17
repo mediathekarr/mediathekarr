@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/db";
 import { tvdbCache } from "@/lib/cache";
+import { getSetting } from "@/lib/settings";
 import type { TvdbData, TvdbEpisode } from "@/types";
 
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 
-function getApiKey(): string | null {
-  return process.env.TMDB_API_KEY || null;
+async function getApiKey(): Promise<string | null> {
+  return getSetting("api.tmdb.key");
 }
 
 function isJwtToken(key: string): boolean {
@@ -77,7 +78,7 @@ export async function getShowInfoByTvdbId(tvdbId: number): Promise<TvdbData | nu
     return null;
   }
 
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) {
     return null;
   }

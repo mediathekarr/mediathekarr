@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { tvdbCache } from "@/lib/cache";
+import { getSetting } from "@/lib/settings";
 import type { TvdbData } from "@/types";
 import { getShowInfoByTvdbId as getTvdbShow } from "./tvdb";
 import { getShowInfoByTvdbId as getTmdbShow } from "./tmdb";
@@ -105,8 +106,8 @@ function getLocalShow(tvdbId: number): TvdbData | null {
 /**
  * Get show info by TVDB ID from multiple sources:
  * 1. Local shows.json (always checked first)
- * 2. TVDB API (if TVDB_API_KEY is configured)
- * 3. TMDB API (if TMDB_API_KEY is configured)
+ * 2. TVDB API (if api.tvdb.key is configured in settings)
+ * 3. TMDB API (if api.tmdb.key is configured in settings)
  */
 export async function getShowInfoByTvdbId(tvdbId: number): Promise<TvdbData | null> {
   if (tvdbId === undefined || tvdbId === null) {
@@ -130,7 +131,8 @@ export async function getShowInfoByTvdbId(tvdbId: number): Promise<TvdbData | nu
   }
 
   // 2. Try TVDB if API key is configured
-  if (process.env.TVDB_API_KEY) {
+  const tvdbApiKey = await getSetting("api.tvdb.key");
+  if (tvdbApiKey) {
     console.log(`[Shows] Trying TVDB for ID ${tvdbId}`);
     const tvdbResult = await getTvdbShow(tvdbId);
     if (tvdbResult) {
@@ -141,7 +143,8 @@ export async function getShowInfoByTvdbId(tvdbId: number): Promise<TvdbData | nu
   }
 
   // 3. Try TMDB if API key is configured
-  if (process.env.TMDB_API_KEY) {
+  const tmdbApiKey = await getSetting("api.tmdb.key");
+  if (tmdbApiKey) {
     console.log(`[Shows] Trying TMDB for ID ${tvdbId}`);
     const tmdbResult = await getTmdbShow(tvdbId);
     if (tmdbResult) {

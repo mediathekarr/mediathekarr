@@ -1,0 +1,69 @@
+import { prisma } from "@/lib/db";
+
+// Cache for settings to avoid repeated DB queries
+const settingsCache: Map<string, { value: string; expiry: number }> = new Map();
+const CACHE_TTL = 60 * 1000; // 1 minute
+
+export async function getSetting(key: string): Promise<string | null> {
+  // Check cache first
+  const cached = settingsCache.get(key);
+  if (cached && Date.now() < cached.expiry) {
+    return cached.value;
+  }
+
+  // Fetch from database
+  const config = await prisma.config.findUnique({
+    where: { key },
+  });
+
+  if (config) {
+    settingsCache.set(key, {
+      value: config.value,
+      expiry: Date.now() + CACHE_TTL,
+    });
+    return config.value;
+  }
+
+  return null;
+}
+
+export async function getSettings(keys: string[]): Promise<Record<string, string | null>> {
+  const result: Record<string, string | null> = {};
+
+  // Check which keys need fetching
+  const keysToFetch: string[] = [];
+  for (const key of keys) {
+    const cached = settingsCache.get(key);
+    if (cached && Date.now() < cached.expiry) {
+      result[key] = cached.value;
+    } else {
+      keysToFetch.push(key);
+    }
+  }
+
+  // Fetch missing keys from database
+  if (keysToFetch.length > 0) {
+    const configs = await prisma.config.findMany({
+      where: { key: { in: keysToFetch } },
+    });
+
+    const configMap = new Map(configs.map((c) => [c.key, c.value]));
+
+    for (const key of keysToFetch) {
+      const value = configMap.get(key) || null;
+      if (value) {
+        settingsCache.set(key, {
+          value,
+          expiry: Date.now() + CACHE_TTL,
+        });
+      }
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+export function clearSettingsCache(): void {
+  settingsCache.clear();
+}
