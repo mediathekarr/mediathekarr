@@ -19,8 +19,15 @@ interface SearchResult {
   size: number;
   url_video: string;
   url_video_hd: string;
+  url_video_low: string;
   url_website: string;
 }
+
+type QualityOption = {
+  label: string;
+  url: string;
+  key: string;
+};
 
 export default function MoviesPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,8 +61,23 @@ export default function MoviesPage() {
     }
   };
 
-  const handleDownload = async (result: SearchResult) => {
-    setDownloadingIds((prev) => new Set(prev).add(result.id));
+  const getQualityOptions = (result: SearchResult): QualityOption[] => {
+    const options: QualityOption[] = [];
+    if (result.url_video_hd && result.url_video_hd !== result.url_video) {
+      options.push({ label: "HD", url: result.url_video_hd, key: "hd" });
+    }
+    if (result.url_video) {
+      options.push({ label: "SD", url: result.url_video, key: "sd" });
+    }
+    if (result.url_video_low) {
+      options.push({ label: "Low", url: result.url_video_low, key: "low" });
+    }
+    return options;
+  };
+
+  const handleDownload = async (result: SearchResult, url: string, qualityKey: string) => {
+    const downloadKey = `${result.id}-${qualityKey}`;
+    setDownloadingIds((prev) => new Set(prev).add(downloadKey));
 
     const fileName = `${result.topic} - ${result.title}`.replace(/[<>:"/\\|?*]/g, "_");
     const nzbContent = `<?xml version="1.0" encoding="UTF-8"?>
@@ -64,7 +86,7 @@ export default function MoviesPage() {
   <head>
     <meta type="filename" filename="${fileName}.nzb"/>
   </head>
-  <!-- ${result.url_video_hd || result.url_video} -->
+  <!-- ${url} -->
 </nzb>`;
 
     try {
@@ -84,7 +106,7 @@ export default function MoviesPage() {
     } finally {
       setDownloadingIds((prev) => {
         const next = new Set(prev);
-        next.delete(result.id);
+        next.delete(downloadKey);
         return next;
       });
     }
@@ -162,14 +184,24 @@ export default function MoviesPage() {
                       {formatDate(result.timestamp)} &bull; {formatSize(result.size)}
                     </p>
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={() => handleDownload(result)}
-                    disabled={downloadingIds.has(result.id)}
-                  >
-                    <Download className="w-4 h-4 mr-1" />
-                    {downloadingIds.has(result.id) ? "..." : "Download"}
-                  </Button>
+                  <div className="flex flex-col gap-1">
+                    {getQualityOptions(result).map((option) => {
+                      const downloadKey = `${result.id}-${option.key}`;
+                      return (
+                        <Button
+                          key={option.key}
+                          size="sm"
+                          variant={option.key === "hd" ? "default" : "outline"}
+                          onClick={() => handleDownload(result, option.url, option.key)}
+                          disabled={downloadingIds.has(downloadKey)}
+                          className="min-w-[80px]"
+                        >
+                          <Download className="w-3 h-3 mr-1" />
+                          {downloadingIds.has(downloadKey) ? "..." : option.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
               </Card>
             ))}

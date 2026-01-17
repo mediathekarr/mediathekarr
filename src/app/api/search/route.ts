@@ -13,6 +13,7 @@ export interface SearchResult {
   size: number;
   url_video: string;
   url_video_hd: string;
+  url_video_low: string;
   url_website: string;
 }
 
@@ -76,6 +77,7 @@ export async function GET(request: NextRequest) {
           size: number;
           url_video: string;
           url_video_hd: string;
+          url_video_low: string;
           url_website: string;
         }) => ({
           id: `${item.channel}-${item.topic}-${item.title}-${item.filmlisteTimestamp}`,
@@ -88,6 +90,7 @@ export async function GET(request: NextRequest) {
           size: item.size,
           url_video: item.url_video,
           url_video_hd: item.url_video_hd || item.url_video,
+          url_video_low: item.url_video_low || "",
           url_website: item.url_website,
         })
       );
