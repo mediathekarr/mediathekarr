@@ -247,11 +247,52 @@ function createRssItems(
   return items;
 }
 
-export function generateRssItems(info: MatchedEpisodeInfo): NewznabItem[] {
+export type QualityPreference = "all" | "best" | "1080p" | "720p" | "480p";
+
+export function generateRssItems(
+  info: MatchedEpisodeInfo,
+  qualityPreference: QualityPreference = "all"
+): NewznabItem[] {
   const items: NewznabItem[] = [];
   const baseCategories = ["5000", "2000"];
 
-  if (info.item.url_video_hd) {
+  const has1080p = !!info.item.url_video_hd;
+  const has720p = !!info.item.url_video;
+  const has480p = !!info.item.url_video_low;
+
+  // Determine which qualities to include based on preference
+  let include1080p = false;
+  let include720p = false;
+  let include480p = false;
+
+  switch (qualityPreference) {
+    case "all":
+      include1080p = has1080p;
+      include720p = has720p;
+      include480p = has480p;
+      break;
+    case "best":
+      // Only include the best available quality
+      if (has1080p) {
+        include1080p = true;
+      } else if (has720p) {
+        include720p = true;
+      } else if (has480p) {
+        include480p = true;
+      }
+      break;
+    case "1080p":
+      include1080p = has1080p;
+      break;
+    case "720p":
+      include720p = has720p;
+      break;
+    case "480p":
+      include480p = has480p;
+      break;
+  }
+
+  if (include1080p) {
     items.push(
       ...createRssItems(
         info,
@@ -264,7 +305,7 @@ export function generateRssItems(info: MatchedEpisodeInfo): NewznabItem[] {
     );
   }
 
-  if (info.item.url_video) {
+  if (include720p) {
     items.push(
       ...createRssItems(
         info,
@@ -277,7 +318,7 @@ export function generateRssItems(info: MatchedEpisodeInfo): NewznabItem[] {
     );
   }
 
-  if (info.item.url_video_low) {
+  if (include480p) {
     items.push(
       ...createRssItems(
         info,

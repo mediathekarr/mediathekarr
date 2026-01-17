@@ -1,4 +1,5 @@
 import { mediathekCache } from "@/lib/cache";
+import { getSetting } from "@/lib/settings";
 import { getShowInfoByTvdbId } from "./shows";
 import {
   ensureRulesetsLoaded,
@@ -7,7 +8,13 @@ import {
   getAllTopics,
   getOrGenerateRulesetForShow,
 } from "./rulesets";
-import { generateRssItems, convertItemsToRss, serializeRss, getEmptyRssResult } from "./newznab";
+import {
+  generateRssItems,
+  convertItemsToRss,
+  serializeRss,
+  getEmptyRssResult,
+  QualityPreference,
+} from "./newznab";
 import type {
   ApiResultItem,
   MediathekApiResponse,
@@ -31,6 +38,27 @@ import {
 
 const MEDIATHEK_API_URL = "https://mediathekviewweb.de/api/query";
 const QUERY_FIELDS = ["topic", "title"];
+const VALID_QUALITIES: QualityPreference[] = ["all", "best", "1080p", "720p", "480p"];
+
+async function getQualityPreference(): Promise<QualityPreference> {
+  const setting = await getSetting("download.quality");
+  if (setting && VALID_QUALITIES.includes(setting as QualityPreference)) {
+    return setting as QualityPreference;
+  }
+  return "all"; // Default to all qualities
+}
+
+async function getMinDuration(): Promise<number> {
+  const setting = await getSetting("matching.minDuration");
+  if (setting) {
+    const parsed = parseInt(setting, 10);
+    if (!isNaN(parsed) && parsed >= 0) {
+      return parsed;
+    }
+  }
+  return 300; // Default: 5 minutes
+}
+
 const SKIP_KEYWORDS = [
   "Audiodeskription",
   "Hörfassung",
@@ -70,8 +98,12 @@ async function fetchMediathekViewApiResponse(
   return "";
 }
 
-function shouldSkipItem(item: ApiResultItem): boolean {
-  return item.url_video.endsWith(".m3u8") || SKIP_KEYWORDS.some((kw) => item.title.includes(kw));
+function shouldSkipItem(item: ApiResultItem, minDuration: number): boolean {
+  // Skip m3u8 streams, items with skip keywords, and items shorter than minDuration
+  if (item.url_video.endsWith(".m3u8")) return true;
+  if (SKIP_KEYWORDS.some((kw) => item.title.includes(kw))) return true;
+  if (minDuration > 0 && item.duration < minDuration) return true;
+  return false;
 }
 
 function getFieldValue(item: ApiResultItem, fieldName: string): string {
@@ -202,14 +234,74 @@ function formatTitle(title: string): string {
   return formatted;
 }
 
+// String similarity using Levenshtein distance
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+function stringSimilarity(a: string, b: string): number {
+  if (a === b) return 1;
+  if (a.length === 0 || b.length === 0) return 0;
+
+  const distance = levenshteinDistance(a.toLowerCase(), b.toLowerCase());
+  const maxLength = Math.max(a.length, b.length);
+  return 1 - distance / maxLength;
+}
+
+type MatchingStrategyPreference = "fuzzy" | "strict";
+
+async function getMatchingSettings(): Promise<{
+  strategy: MatchingStrategyPreference;
+  threshold: number;
+}> {
+  const [strategySetting, thresholdSetting] = await Promise.all([
+    getSetting("matching.strategy"),
+    getSetting("matching.threshold"),
+  ]);
+
+  const strategy: MatchingStrategyPreference = strategySetting === "strict" ? "strict" : "fuzzy";
+
+  let threshold = 0.7;
+  if (thresholdSetting) {
+    // Handle both "0.7" and "0,7" formats
+    const parsed = parseFloat(thresholdSetting.replace(",", "."));
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
+      threshold = parsed;
+    }
+  }
+
+  return { strategy, threshold };
+}
+
 function tryParseDate(dateString: string): Date | null {
-  // German date formats
-  const formats = [
-    /^(\d{1,2})\. (\w+) (\d{4})$/, // "7. Juni 2024"
-    /^(\d{2})\.(\d{2})\.(\d{4})$/, // "31.12.2017"
-    /^(\d{4})-(\d{2})-(\d{2})$/, // "2017-12-01"
-    /^(\d{8})$/, // "20171201"
-  ];
+  // Supported German date formats:
+  // - "d. MMMM yyyy" (e.g., "7. Juni 2024")
+  // - "dd.MM.yyyy" (e.g., "31.12.2017")
+  // - "yyyy-MM-dd" (e.g., "2017-12-01")
+  // - "yyyyMMdd" (e.g., "20171201")
 
   const germanMonths: Record<string, number> = {
     januar: 0,
@@ -288,7 +380,8 @@ async function matchesSeasonAndEpisode(
 
 async function matchesItemTitleIncludes(
   item: ApiResultItem,
-  ruleset: Ruleset
+  ruleset: Ruleset,
+  threshold: number = 0.7
 ): Promise<MatchedEpisodeInfo | null> {
   const tvdbData = await getShowInfoByTvdbId(ruleset.media.media_tvdbId);
   if (!tvdbData?.episodes?.length) return null;
@@ -296,9 +389,24 @@ async function matchesItemTitleIncludes(
   const constructedTitle = buildTitleFromRegexRules(item, ruleset.titleRegexRules);
   if (!constructedTitle) return null;
 
-  const matchedEpisode = tvdbData.episodes.find((ep) =>
-    formatTitle(ep.name).toLowerCase().includes(formatTitle(constructedTitle).toLowerCase())
+  const formattedConstructed = formatTitle(constructedTitle).toLowerCase();
+
+  // First try exact contains match
+  let matchedEpisode = tvdbData.episodes.find((ep) =>
+    formatTitle(ep.name).toLowerCase().includes(formattedConstructed)
   );
+
+  // If no exact match, try fuzzy matching with threshold
+  if (!matchedEpisode && threshold < 1.0) {
+    let bestSimilarity = 0;
+    for (const ep of tvdbData.episodes) {
+      const similarity = stringSimilarity(formatTitle(ep.name), formattedConstructed);
+      if (similarity >= threshold && similarity > bestSimilarity) {
+        bestSimilarity = similarity;
+        matchedEpisode = ep;
+      }
+    }
+  }
 
   if (!matchedEpisode) return null;
 
@@ -313,7 +421,8 @@ async function matchesItemTitleIncludes(
 
 async function matchesItemTitleExact(
   item: ApiResultItem,
-  ruleset: Ruleset
+  ruleset: Ruleset,
+  threshold: number = 0.95
 ): Promise<MatchedEpisodeInfo | null> {
   const tvdbData = await getShowInfoByTvdbId(ruleset.media.media_tvdbId);
   if (!tvdbData?.episodes?.length) return null;
@@ -323,9 +432,19 @@ async function matchesItemTitleExact(
 
   const formattedTitle = formatTitle(constructedTitle).toLowerCase();
 
-  const matchedEpisodes = tvdbData.episodes.filter(
+  // First try exact match
+  let matchedEpisodes = tvdbData.episodes.filter(
     (ep) => formatTitle(ep.name).toLowerCase() === formattedTitle
   );
+
+  // If no exact match and threshold allows, try very high similarity matching
+  if (matchedEpisodes.length === 0 && threshold < 1.0) {
+    const highThreshold = Math.max(threshold, 0.9); // At least 90% for "exact" matching
+    matchedEpisodes = tvdbData.episodes.filter((ep) => {
+      const similarity = stringSimilarity(formatTitle(ep.name).toLowerCase(), formattedTitle);
+      return similarity >= highThreshold;
+    });
+  }
 
   let matchedEpisode: TvdbEpisode | undefined;
   if (matchedEpisodes.length === 1) {
@@ -389,6 +508,11 @@ async function applyRulesetFilters(
   tvdbData?: TvdbData
 ): Promise<{ matchedEpisodes: MatchedEpisodeInfo[]; unmatchedItems: ApiResultItem[] }> {
   await ensureRulesetsLoaded();
+  const minDuration = await getMinDuration();
+  const matchingSettings = await getMatchingSettings();
+  console.log(
+    `[Mediathek] Matching settings: strategy=${matchingSettings.strategy}, threshold=${matchingSettings.threshold}, minDuration=${minDuration}s`
+  );
 
   const matchedEpisodes: MatchedEpisodeInfo[] = [];
   const unmatchedItems: ApiResultItem[] = [...results];
@@ -429,7 +553,7 @@ async function applyRulesetFilters(
 
   let checkedCount = 0;
   for (const item of results) {
-    if (shouldSkipItem(item)) {
+    if (shouldSkipItem(item, minDuration)) {
       const idx = unmatchedItems.indexOf(item);
       if (idx > -1) unmatchedItems.splice(idx, 1);
       continue;
@@ -464,15 +588,21 @@ async function applyRulesetFilters(
 
       let matchInfo: MatchedEpisodeInfo | null = null;
 
+      // Apply matching with threshold from settings
+      const threshold = matchingSettings.threshold;
+
       switch (ruleset.matchingStrategy) {
         case "SeasonAndEpisodeNumber" as MatchingStrategy:
           matchInfo = await matchesSeasonAndEpisode(item, ruleset);
           break;
         case "ItemTitleIncludes" as MatchingStrategy:
-          matchInfo = await matchesItemTitleIncludes(item, ruleset);
+          matchInfo = await matchesItemTitleIncludes(item, ruleset, threshold);
           break;
         case "ItemTitleExact" as MatchingStrategy:
-          matchInfo = await matchesItemTitleExact(item, ruleset);
+          // For strict strategy, require higher threshold
+          const exactThreshold =
+            matchingSettings.strategy === "strict" ? Math.max(threshold, 0.95) : threshold;
+          matchInfo = await matchesItemTitleExact(item, ruleset, exactThreshold);
           break;
         case "ItemTitleEqualsAirdate" as MatchingStrategy:
           matchInfo = await matchesItemTitleEqualsAirdate(item, ruleset);
@@ -570,11 +700,14 @@ export async function fetchSearchResultsById(
   limit: number,
   offset: number
 ): Promise<string> {
+  const quality = await getQualityPreference();
+  const minDuration = await getMinDuration();
+  const matchingSettings = await getMatchingSettings();
   console.log(
-    `[Mediathek] fetchSearchResultsById: tvdbId=${tvdbData.id}, name="${tvdbData.name}", germanName="${tvdbData.germanName}", season=${season}, episode=${episodeNumber}`
+    `[Mediathek] fetchSearchResultsById: tvdbId=${tvdbData.id}, name="${tvdbData.name}", germanName="${tvdbData.germanName}", season=${season}, episode=${episodeNumber}, quality=${quality}, minDuration=${minDuration}`
   );
 
-  const cacheKey = `tvdb_${tvdbData.id}_${season ?? "null"}_${episodeNumber ?? "null"}_${limit}_${offset}`;
+  const cacheKey = `tvdb_${tvdbData.id}_${season ?? "null"}_${episodeNumber ?? "null"}_${limit}_${offset}_${quality}_${minDuration}_${matchingSettings.threshold}`;
 
   const cached = mediathekCache.get(cacheKey);
   if (cached && typeof cached === "object" && "response" in cached) {
@@ -634,8 +767,10 @@ export async function fetchSearchResultsById(
   const matchedDesiredEpisodes = applyDesiredEpisodeFilter(matchedEpisodes, desiredEpisodes);
   console.log(`[Mediathek] Matched desired episodes: ${matchedDesiredEpisodes.length}`);
 
-  const newznabItems: NewznabItem[] = matchedDesiredEpisodes.flatMap(generateRssItems);
-  console.log(`[Mediathek] Generated ${newznabItems.length} Newznab items`);
+  const newznabItems: NewznabItem[] = matchedDesiredEpisodes.flatMap((info) =>
+    generateRssItems(info, quality)
+  );
+  console.log(`[Mediathek] Generated ${newznabItems.length} Newznab items (quality: ${quality})`);
 
   const response = convertItemsToRss(newznabItems, limit, offset);
 
@@ -649,7 +784,10 @@ export async function fetchSearchResultsByString(
   limit: number,
   offset: number
 ): Promise<string> {
-  const cacheKey = `q_${q ?? "null"}_${season ?? "null"}_${limit}_${offset}`;
+  const quality = await getQualityPreference();
+  const minDuration = await getMinDuration();
+  const matchingSettings = await getMatchingSettings();
+  const cacheKey = `q_${q ?? "null"}_${season ?? "null"}_${limit}_${offset}_${quality}_${minDuration}_${matchingSettings.threshold}`;
 
   const cached = mediathekCache.get(cacheKey);
   if (cached) {
@@ -692,7 +830,9 @@ export async function fetchSearchResultsByString(
   }
 
   const { matchedEpisodes } = await applyRulesetFilters(results);
-  const newznabItems: NewznabItem[] = matchedEpisodes.flatMap(generateRssItems);
+  const newznabItems: NewznabItem[] = matchedEpisodes.flatMap((info) =>
+    generateRssItems(info, quality)
+  );
   const response = convertItemsToRss(newznabItems, limit, offset);
 
   mediathekCache.set(cacheKey, { response });
@@ -700,7 +840,10 @@ export async function fetchSearchResultsByString(
 }
 
 export async function fetchSearchResultsForRssSync(limit: number, offset: number): Promise<string> {
-  const cacheKey = `rss_${limit}_${offset}`;
+  const quality = await getQualityPreference();
+  const minDuration = await getMinDuration();
+  const matchingSettings = await getMatchingSettings();
+  const cacheKey = `rss_${limit}_${offset}_${quality}_${minDuration}_${matchingSettings.threshold}`;
 
   const cached = mediathekCache.get(cacheKey);
   if (cached) {
@@ -731,7 +874,9 @@ export async function fetchSearchResultsForRssSync(limit: number, offset: number
   }
 
   const { matchedEpisodes } = await applyRulesetFilters(results);
-  const newznabItems: NewznabItem[] = matchedEpisodes.flatMap(generateRssItems);
+  const newznabItems: NewznabItem[] = matchedEpisodes.flatMap((info) =>
+    generateRssItems(info, quality)
+  );
   const response = convertItemsToRss(newznabItems, limit, offset);
 
   mediathekCache.set(cacheKey, { response });

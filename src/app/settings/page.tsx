@@ -172,10 +172,15 @@ export default function SettingsPage() {
                       onChange={(e) => setFieldValue("download.quality", e.target.value)}
                       className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
-                      <option value="hd">HD (720p/1080p)</option>
-                      <option value="sd">SD (480p)</option>
-                      <option value="best">Beste verfügbare</option>
+                      <option value="all">Alle Qualitäten</option>
+                      <option value="best">Nur beste verfügbare</option>
+                      <option value="1080p">Nur 1080p (Full HD)</option>
+                      <option value="720p">Nur 720p (HD)</option>
+                      <option value="480p">Nur 480p (SD)</option>
                     </select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Welche Qualitäten sollen im Newznab-Feed angezeigt werden?
+                    </p>
                   </div>
                   <Button
                     onClick={() => handleSave(["download.path", "download.quality"])}
@@ -338,6 +343,9 @@ export default function SettingsPage() {
                       <option value="fuzzy">Fuzzy (flexibel)</option>
                       <option value="strict">Strict (exakt)</option>
                     </select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Fuzzy: Erlaubt ähnliche Titel-Matches. Strict: Nur exakte Übereinstimmungen.
+                    </p>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Schwellwert</label>
@@ -392,26 +400,39 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Cache-Einstellungen</CardTitle>
-                  <CardDescription>Time-to-Live für verschiedene Caches</CardDescription>
+                  <CardDescription>
+                    Der Cache speichert Daten temporär, um wiederholte Anfragen zu beschleunigen.
+                    Die TTL (Time-to-Live) bestimmt, wie lange Daten im Cache bleiben bevor sie neu
+                    geladen werden.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium">Such-Cache TTL (Sekunden)</label>
+                    <label className="text-sm font-medium">Such-Cache (Sekunden)</label>
                     <Input
                       type="number"
                       value={getFieldValue("cache.ttl.search")}
                       onChange={(e) => setFieldValue("cache.ttl.search", e.target.value)}
                       className="mt-1"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Wie lange Suchergebnisse von der Mediathek zwischengespeichert werden.
+                      Standard: 3600 (1 Stunde). Niedrigere Werte = aktuellere Ergebnisse, mehr
+                      API-Anfragen.
+                    </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Metadaten-Cache TTL (Sekunden)</label>
+                    <label className="text-sm font-medium">Metadaten-Cache (Sekunden)</label>
                     <Input
                       type="number"
                       value={getFieldValue("cache.ttl.metadata")}
                       onChange={(e) => setFieldValue("cache.ttl.metadata", e.target.value)}
                       className="mt-1"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Wie lange Show-Informationen (Episodenlisten, Titel) gespeichert werden.
+                      Standard: 86400 (24 Stunden). Diese Daten ändern sich selten.
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -430,6 +451,10 @@ export default function SettingsPage() {
                       Cache leeren
                     </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tipp: &quot;Cache leeren&quot; erzwingt das Neuladen aller Daten bei der
+                    nächsten Anfrage.
+                  </p>
                 </CardContent>
               </Card>
             </TabsContent>

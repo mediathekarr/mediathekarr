@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { clearSettingsCache } from "@/lib/settings";
+import { clearTTLCache } from "@/lib/cache";
 
 // Default settings
 const DEFAULT_SETTINGS: Record<string, string> = {
   // General
   "download.path": "/downloads",
-  "download.quality": "hd",
+  "download.quality": "all",
 
   // API Keys
   "api.tvdb.key": "",
@@ -69,6 +71,11 @@ export async function POST(request: NextRequest) {
         update: { value: String(body.value) },
         create: { key: body.key, value: String(body.value) },
       });
+      clearSettingsCache();
+      // Clear TTL cache if cache settings changed
+      if (body.key.startsWith("cache.")) {
+        clearTTLCache();
+      }
       return NextResponse.json({ success: true, key: body.key });
     }
 
@@ -82,6 +89,11 @@ export async function POST(request: NextRequest) {
         })
       );
       await Promise.all(updates);
+      clearSettingsCache();
+      // Clear TTL cache if any cache settings changed
+      if (Object.keys(body).some((key) => key.startsWith("cache."))) {
+        clearTTLCache();
+      }
       return NextResponse.json({ success: true, updated: Object.keys(body).length });
     }
 

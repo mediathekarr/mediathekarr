@@ -14,8 +14,7 @@ Rundfunk-Indexer für Sonarr/Radarr - Automatischer Download von ARD, ZDF und an
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="55%">
-  <img src="docs/screenshots/sonarr-integration.png" alt="Sonarr Integration" width="30%">
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard">
 </p>
 
 ## Features
@@ -41,9 +40,6 @@ services:
       - PUID=1000                           # User ID (id -u)
       - PGID=1000                           # Group ID (id -g)
       - DOWNLOAD_FOLDER_PATH=/downloads
-      # Optional: Metadaten-APIs (mindestens eine empfohlen)
-      # - TVDB_API_KEY=your-tvdb-api-key    # kostenpflichtig
-      # - TMDB_API_KEY=your-tmdb-api-key    # kostenlos
     volumes:
       - ./data:/app/prisma/data
       - ./downloads:/app/downloads
@@ -51,6 +47,8 @@ services:
       - "127.0.0.1:6767:6767"
     restart: unless-stopped
 ```
+
+Nach dem Start ist die Web-Oberfläche unter `http://localhost:6767` erreichbar. Beim ersten Start führt der **Setup-Wizard** durch die Konfiguration (API Keys, Pfade, etc.).
 
 ### Starten
 
@@ -91,19 +89,31 @@ npm start
 |----------|--------------|----------|
 | `PUID` | User ID für Dateiberechtigungen | `1001` |
 | `PGID` | Group ID für Dateiberechtigungen | `1001` |
-| `TVDB_API_KEY` | TVDB API Key (kostenpflichtig) | - |
-| `TMDB_API_KEY` | TMDB API Key (kostenlos) | - |
 | `DOWNLOAD_FOLDER_PATH` | Pfad für fertige Downloads im Container | `/downloads` |
 | `DOWNLOAD_TEMP_PATH` | Pfad für laufende Downloads (incomplete) | `$DOWNLOAD_FOLDER_PATH/incomplete` |
 | `DATABASE_URL` | SQLite Datenbank-Pfad | `file:./prisma/data/rundfunkarr.db` |
+
+### Web-Oberfläche
+
+RundfunkArr bietet eine vollständige Web-Oberfläche mit:
+
+- **Dashboard** - Übersicht über aktive Downloads und letzte Aktivitäten
+- **Suche** - Direkte Suche in den Mediatheken
+- **Downloads** - Queue und Historie verwalten
+- **Settings** - Alle Einstellungen konfigurieren:
+  - Download-Pfad und Qualitäts-Präferenzen
+  - API Keys für TVDB/TMDB
+  - Matching-Strategie und Schwellwerte
+  - Cache-TTL Einstellungen
+- **Setup-Wizard** - Geführte Erstkonfiguration
 
 ### Metadaten-Quellen
 
 RundfunkArr sucht Show-Informationen in folgender Reihenfolge:
 
 1. **Lokale Datenbank** (`data/shows.json`) - Kein API Key nötig
-2. **TVDB** - Wenn `TVDB_API_KEY` konfiguriert (kostenpflichtig)
-3. **TMDB** - Wenn `TMDB_API_KEY` konfiguriert (kostenlos)
+2. **TVDB** - Wenn in den Einstellungen konfiguriert (kostenpflichtig)
+3. **TMDB** - Wenn in den Einstellungen konfiguriert (kostenlos)
 
 Für Shows die nicht in TVDB/TMDB sind, können Einträge in `data/shows.json` hinzugefügt werden.
 
@@ -205,9 +215,19 @@ npm run db:migrate
 
 ```
 src/
-├── app/api/           # Next.js API Routes
-│   ├── newznab/       # Indexer API
-│   └── route.ts       # Downloader API (SABnzbd)
+├── app/               # Next.js App Router
+│   ├── api/           # API Routes
+│   │   ├── newznab/   # Indexer API (Newznab)
+│   │   ├── settings/  # Settings API
+│   │   └── route.ts   # Downloader API (SABnzbd)
+│   ├── settings/      # Settings Page
+│   ├── setup/         # Setup Wizard
+│   ├── search/        # Search Page
+│   └── downloads/     # Downloads Page
+├── components/        # React Components
+│   └── layout/        # Sidebar, Navigation
+├── contexts/          # React Context
+│   └── settings-context.tsx
 ├── services/          # Business Logic
 │   ├── mediathek.ts   # MediathekView API
 │   ├── shows.ts       # Unified Show Lookup
@@ -220,7 +240,8 @@ src/
 │   └── ffmpeg.ts
 └── lib/               # Utilities
     ├── db.ts          # Prisma Client
-    └── cache.ts       # LRU Caches
+    ├── cache.ts       # Dynamic TTL Caches
+    └── settings.ts    # Settings Helper
 data/
 ├── shows.json         # Lokale Show-Datenbank
 └── rulesets.json      # Matching Rulesets
@@ -228,7 +249,7 @@ data/
 
 ## Credits
 
-- [PCJones/RundfunkArr](https://github.com/PCJones/MediathekArr) - Original .NET Implementation
+- [PCJones/MediathekArr](https://github.com/PCJones/MediathekArr) - Original .NET Implementation
 - [MediathekViewWeb](https://github.com/mediathekview/mediathekviewweb) - Mediathek API
 - [TheTVDB](https://thetvdb.com) - Metadaten API
 - [TMDB](https://www.themoviedb.org) - Metadaten API
