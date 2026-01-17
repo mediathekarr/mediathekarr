@@ -341,6 +341,86 @@ export async function getMovieInfoByTmdbId(tmdbId: number): Promise<TmdbMovieDat
   }
 }
 
+interface TmdbSearchMovieResult {
+  results: Array<{
+    id: number;
+    title: string;
+    original_title: string;
+    release_date: string;
+  }>;
+}
+
+/**
+ * Search for a movie by title (and optionally year)
+ * Returns the best matching movie from TMDB
+ */
+export async function searchMovieByTitle(
+  title: string,
+  year?: number | null
+): Promise<TmdbMovieData | null> {
+  if (!title) {
+    return null;
+  }
+
+  const apiKey = await getApiKey();
+  if (!apiKey) {
+    console.error("[TMDB] No API key configured");
+    return null;
+  }
+
+  // Check memory cache first
+  const cacheKey = `tmdb_movie_search_${title}_${year || ""}`;
+  const cached = tvdbCache.get(cacheKey) as TmdbMovieData | undefined;
+  if (cached) {
+    console.log(`[TMDB] Movie search cache hit for "${title}" (${year})`);
+    return cached;
+  }
+
+  try {
+    console.log(`[TMDB] Searching movie by title: "${title}"${year ? ` (${year})` : ""}`);
+    const headers = getAuthHeaders(apiKey);
+
+    // Search with German language preference
+    let searchUrl = getApiUrl(
+      `/search/movie?query=${encodeURIComponent(title)}&language=de-DE`,
+      apiKey
+    );
+    if (year) {
+      searchUrl += `&year=${year}`;
+    }
+
+    const searchResponse = await fetch(searchUrl, { headers });
+
+    if (!searchResponse.ok) {
+      console.error(`[TMDB] Movie search request failed: ${searchResponse.status}`);
+      return null;
+    }
+
+    const searchData: TmdbSearchMovieResult = await searchResponse.json();
+
+    if (!searchData.results || searchData.results.length === 0) {
+      console.log(`[TMDB] No movie found for "${title}"`);
+      return null;
+    }
+
+    // Get the first (best) match
+    const tmdbId = searchData.results[0].id;
+    console.log(`[TMDB] Found movie: "${searchData.results[0].title}" (TMDB ID: ${tmdbId})`);
+
+    // Get full movie info
+    const movieData = await getMovieInfoByTmdbId(tmdbId);
+
+    if (movieData) {
+      tvdbCache.set(cacheKey, movieData);
+    }
+
+    return movieData;
+  } catch (error) {
+    console.error("[TMDB] Error searching movie:", error);
+    return null;
+  }
+}
+
 /**
  * Get movie info by IMDB ID
  * Uses TMDB /find endpoint to resolve IMDB ID to TMDB ID

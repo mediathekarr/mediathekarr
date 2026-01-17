@@ -17,6 +17,7 @@ import {
   QualityPreference,
 } from "./newznab";
 import { matchMovieItems } from "./movie-matcher";
+import { searchMovieByTitle } from "./tmdb";
 import type {
   ApiResultItem,
   MediathekApiResponse,
@@ -1015,7 +1016,15 @@ export async function fetchMovieSearchByQuery(
     `[Mediathek] fetchMovieSearchByQuery: query="${query}", cleanedQuery="${cleanedQuery}", year=${searchYear}, quality=${quality}, minDuration=${MOVIE_MIN_DURATION}s`
   );
 
-  const cacheKey = `movie_query_${cleanedQuery}_${limit}_${offset}_${quality}`;
+  // Try to find the movie on TMDB to get IDs for Radarr matching
+  const tmdbMovie = await searchMovieByTitle(cleanedQuery, searchYear);
+  if (tmdbMovie) {
+    console.log(
+      `[Mediathek] Found TMDB match: "${tmdbMovie.germanTitle}" (TMDB: ${tmdbMovie.tmdbId}, IMDB: ${tmdbMovie.imdbId})`
+    );
+  }
+
+  const cacheKey = `movie_query_${cleanedQuery}_${searchYear || ""}_${limit}_${offset}_${quality}`;
 
   const cached = mediathekCache.get(cacheKey);
   if (cached && typeof cached === "object" && "response" in cached) {
@@ -1155,6 +1164,8 @@ export async function fetchMovieSearchByQuery(
         attributes: [
           { name: "category", value: "2000" },
           { name: "category", value: q.category },
+          ...(tmdbMovie?.tmdbId ? [{ name: "tmdbid", value: tmdbMovie.tmdbId.toString() }] : []),
+          ...(tmdbMovie?.imdbId ? [{ name: "imdbid", value: tmdbMovie.imdbId }] : []),
         ],
       });
     }
