@@ -18,9 +18,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
-
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

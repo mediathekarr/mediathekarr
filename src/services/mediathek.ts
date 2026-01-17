@@ -1005,11 +1005,17 @@ export async function fetchMovieSearchByQuery(
 ): Promise<string> {
   const quality = await getQualityPreference();
   const MOVIE_MIN_DURATION = 60 * 60; // 60 minutes in seconds
+
+  // Strip trailing year from query (Radarr sends "Movie Title 2018")
+  const cleanedQuery = query.replace(/\s+\d{4}$/, "").trim();
+  const yearMatch = query.match(/\s+(\d{4})$/);
+  const searchYear = yearMatch ? parseInt(yearMatch[1], 10) : null;
+
   console.log(
-    `[Mediathek] fetchMovieSearchByQuery: query="${query}", quality=${quality}, minDuration=${MOVIE_MIN_DURATION}s`
+    `[Mediathek] fetchMovieSearchByQuery: query="${query}", cleanedQuery="${cleanedQuery}", year=${searchYear}, quality=${quality}, minDuration=${MOVIE_MIN_DURATION}s`
   );
 
-  const cacheKey = `movie_query_${query}_${limit}_${offset}_${quality}`;
+  const cacheKey = `movie_query_${cleanedQuery}_${limit}_${offset}_${quality}`;
 
   const cached = mediathekCache.get(cacheKey);
   if (cached && typeof cached === "object" && "response" in cached) {
@@ -1017,17 +1023,17 @@ export async function fetchMovieSearchByQuery(
     return (cached as { response: string }).response;
   }
 
-  // Search Mediathek by query
-  const apiCacheKey = `mediathekapi_movie_query_${query}`;
+  // Search Mediathek by query (without year)
+  const apiCacheKey = `mediathekapi_movie_query_${cleanedQuery}`;
   let apiResponse: string;
   const cachedApi = mediathekCache.get(apiCacheKey);
 
   if (cachedApi) {
-    console.log(`[Mediathek] Using cached API response for movie query: "${query}"`);
+    console.log(`[Mediathek] Using cached API response for movie query: "${cleanedQuery}"`);
     apiResponse = (cachedApi as { response: string }).response;
   } else {
-    console.log(`[Mediathek] Searching MediathekView API for movie query: "${query}"`);
-    const queries = [{ fields: QUERY_FIELDS, query: query }];
+    console.log(`[Mediathek] Searching MediathekView API for movie query: "${cleanedQuery}"`);
+    const queries = [{ fields: QUERY_FIELDS, query: cleanedQuery }];
     apiResponse = await fetchMediathekViewApiResponse(queries, 500);
 
     if (apiResponse) {
@@ -1046,7 +1052,9 @@ export async function fetchMovieSearchByQuery(
   try {
     const parsed: MediathekApiResponse = JSON.parse(apiResponse);
     results = parsed.result?.results || [];
-    console.log(`[Mediathek] API returned ${results.length} results for movie query "${query}"`);
+    console.log(
+      `[Mediathek] API returned ${results.length} results for movie query "${cleanedQuery}"`
+    );
   } catch {
     console.log(`[Mediathek] Failed to parse API response for movie query`);
     const response = serializeRss(getEmptyRssResult());
