@@ -10,6 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +45,10 @@ export default function RulesetsPage() {
   const [filteredRulesets, setFilteredRulesets] = useState<Ruleset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; ruleset: Ruleset | null }>({
+    show: false,
+    ruleset: null,
+  });
 
   const fetchRulesets = async () => {
     setIsLoading(true);
@@ -70,16 +84,18 @@ export default function RulesetsPage() {
     }
   }, [searchQuery, rulesets]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Ruleset wirklich löschen?")) return;
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.ruleset) return;
 
     try {
-      const res = await fetch(`/api/rulesets?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/rulesets?id=${deleteConfirm.ruleset.id}`, { method: "DELETE" });
       if (res.ok) {
         fetchRulesets();
       }
     } catch (error) {
       console.error("Failed to delete ruleset:", error);
+    } finally {
+      setDeleteConfirm({ show: false, ruleset: null });
     }
   };
 
@@ -191,7 +207,7 @@ export default function RulesetsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(rs.id)}
+                          onClick={() => setDeleteConfirm({ show: true, ruleset: rs })}
                           title="Löschen"
                         >
                           <Trash2 className="w-4 h-4 text-destructive" />
@@ -205,6 +221,26 @@ export default function RulesetsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={deleteConfirm.show}
+        onOpenChange={(open) => !open && setDeleteConfirm({ show: false, ruleset: null })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ruleset löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchtest du das Ruleset für &quot;{deleteConfirm.ruleset?.topic}&quot; wirklich
+              löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Löschen</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

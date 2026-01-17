@@ -32,8 +32,27 @@ import {
 } from "lucide-react";
 import packageJson from "../../../package.json";
 
+// Helper functions
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+function formatUptime(seconds: number): string {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
 export default function SettingsPage() {
-  const { settings, isLoading, updateSettings, refreshSettings } = useSettings();
+  const { settings, isLoading, updateSettings } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -48,6 +67,23 @@ export default function SettingsPage() {
   });
   const [validatingApi, setValidatingApi] = useState<string | null>(null);
   const [apiStatus, setApiStatus] = useState<Record<string, boolean | null>>({});
+  const [systemInfo, setSystemInfo] = useState<{
+    version: { node: string; ffmpeg: string | null };
+    database: { sizeBytes: number; shows: number; episodes: number; configEntries: number };
+    downloads: { completed: number; inQueue: number; failed: number };
+    uptime: number;
+  } | null>(null);
+
+  // Fetch system info when System tab is viewed
+  const fetchSystemInfo = async () => {
+    try {
+      const res = await fetch("/api/system");
+      const data = await res.json();
+      setSystemInfo(data);
+    } catch (error) {
+      console.error("Failed to fetch system info:", error);
+    }
+  };
 
   // Local form state
   const [formState, setFormState] = useState<Record<string, string>>({});
@@ -169,7 +205,10 @@ export default function SettingsPage() {
       {/* Tabs */}
       <Card>
         <CardContent className="p-6">
-          <Tabs defaultValue="general">
+          <Tabs
+            defaultValue="general"
+            onValueChange={(value) => value === "system" && fetchSystemInfo()}
+          >
             <TabsList className="grid w-full grid-cols-5 mb-6">
               <TabsTrigger value="general" className="flex items-center gap-2">
                 <Settings className="w-4 h-4" />
@@ -518,34 +557,95 @@ export default function SettingsPage() {
             {/* System Tab */}
             <TabsContent value="system" className="space-y-4">
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>System-Informationen</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={fetchSystemInfo}>
+                    <RefreshCw className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Version</p>
-                      <p className="font-medium">{packageJson.version}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Node.js</p>
-                      <p className="font-medium">
-                        {typeof window === "undefined" ? "N/A" : "Browser"}
-                      </p>
+                <CardContent className="space-y-6">
+                  {/* Version Info */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Versionen</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">RundfunkArr</p>
+                        <p className="font-medium">{packageJson.version}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Node.js</p>
+                        <p className="font-medium">{systemInfo?.version.node || "..."}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">FFmpeg</p>
+                        <p className="font-medium">
+                          {systemInfo?.version.ffmpeg ? (
+                            <span className="text-green-500">{systemInfo.version.ffmpeg}</span>
+                          ) : systemInfo ? (
+                            <span className="text-red-500">Nicht gefunden</span>
+                          ) : (
+                            "..."
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Uptime</p>
+                        <p className="font-medium">
+                          {systemInfo ? formatUptime(systemInfo.uptime) : "..."}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Aktionen</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button variant="outline" onClick={refreshSettings}>
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Einstellungen neu laden
-                  </Button>
+                  {/* Database Stats */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Datenbank</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Größe</p>
+                        <p className="font-medium">
+                          {systemInfo ? formatBytes(systemInfo.database.sizeBytes) : "..."}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Gecachte Shows</p>
+                        <p className="font-medium">{systemInfo?.database.shows ?? "..."}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Gecachte Episoden</p>
+                        <p className="font-medium">{systemInfo?.database.episodes ?? "..."}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Einstellungen</p>
+                        <p className="font-medium">{systemInfo?.database.configEntries ?? "..."}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Downloads Stats */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Downloads</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Abgeschlossen</p>
+                        <p className="font-medium text-green-500">
+                          {systemInfo?.downloads.completed ?? "..."}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">In Warteschlange</p>
+                        <p className="font-medium text-blue-500">
+                          {systemInfo?.downloads.inQueue ?? "..."}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Fehlgeschlagen</p>
+                        <p className="font-medium text-red-500">
+                          {systemInfo?.downloads.failed ?? "..."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
