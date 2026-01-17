@@ -38,6 +38,11 @@ next-env.d.ts
 /downloads/
 /ffmpeg/
 
+# Docker test configs
+/radarr-config/
+/sonarr-config/
+/prowlarr-config/
+
 # IDE
 .idea/
 .vscode/

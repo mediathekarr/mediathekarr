@@ -13,7 +13,7 @@ services:
       - ./data:/app/prisma/data          # Database persistence
       - ./downloads:/app/downloads        # Temporary download folder
     ports:
-      - "127.0.0.1:6767:6767"            # Change left side port as needed
+      - "6767:6767"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:6767/api/download?mode=version"]
@@ -21,3 +21,49 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  # Radarr for testing movie integration
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./radarr-config:/config
+      - ./downloads:/downloads
+      - ./movies:/movies
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  # Sonarr for testing TV show integration
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./sonarr-config:/config
+      - ./downloads:/downloads
+      - ./tv:/tv
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+  # Prowlarr indexer manager
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./prowlarr-config:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped

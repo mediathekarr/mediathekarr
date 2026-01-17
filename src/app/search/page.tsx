@@ -136,6 +136,16 @@ export default function SearchPage() {
                         {result.channel}
                       </Badge>
                       <span className="text-sm text-muted-foreground">{result.topic}</span>
+                      {result.title.includes("Gebärdensprache") && (
+                        <Badge className="text-xs bg-purple-600">DGS</Badge>
+                      )}
+                      {(result.title.includes("Audiodeskription") ||
+                        result.title.includes("Hörfassung")) && (
+                        <Badge className="text-xs bg-blue-600">AD</Badge>
+                      )}
+                      {result.title.includes("Untertitel") && (
+                        <Badge className="text-xs bg-green-600">UT</Badge>
+                      )}
                     </div>
                     <h3 className="font-medium">{result.title}</h3>
                     {result.description && (

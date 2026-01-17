@@ -117,8 +117,26 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // No search criteria provided
-      return new NextResponse(serializeRss(getEmptyRssResult()), {
+      // No search criteria provided - return dummy for Radarr test
+      const dummyMovieRss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+  <channel>
+    <title>RundfunkArr</title>
+    <description>RundfunkArr API results</description>
+    <newznab:response offset="0" total="1"/>
+    <item>
+      <title>RundfunkArr.Test.2024.GERMAN.1080p.WEB.h264-MEDiATHEK</title>
+      <guid>rundfunkarr-movie-test-item</guid>
+      <pubDate>${new Date().toUTCString()}</pubDate>
+      <category>Movies &gt; HD</category>
+      <enclosure url="http://localhost/test.nzb" length="1000000000" type="application/x-nzb"/>
+      <newznab:attr name="category" value="2000"/>
+      <newznab:attr name="category" value="2040"/>
+      <newznab:attr name="size" value="1000000000"/>
+    </item>
+  </channel>
+</rss>`;
+      return new NextResponse(dummyMovieRss, {
         status: 200,
         headers: { "Content-Type": "application/xml; charset=utf-8" },
       });

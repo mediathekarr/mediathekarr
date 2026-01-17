@@ -62,14 +62,8 @@ async function getMinDuration(): Promise<number> {
   return 300; // Default: 5 minutes
 }
 
-const SKIP_KEYWORDS = [
-  "Audiodeskription",
-  "Hörfassung",
-  "(klare Sprache)",
-  "(Gebärdensprache)",
-  "Trailer",
-  "Outtakes:",
-];
+// Keywords that are always skipped (trailers, outtakes, etc.)
+const SKIP_KEYWORDS = ["Trailer", "Outtakes:", "(klare Sprache)"];
 
 async function fetchMediathekViewApiResponse(
   queries: Array<{ fields: string[]; query: string }>,
@@ -963,8 +957,21 @@ export async function fetchMovieSearchResults(
 
   console.log(`[Mediathek] Total results for movie matching: ${allResults.length}`);
 
+  // Filter out trailers and other non-movie content
+  const filteredResults = allResults.filter(
+    (item) => !SKIP_KEYWORDS.some((kw) => item.title.includes(kw))
+  );
+  console.log(`[Mediathek] Results after filtering: ${filteredResults.length}`);
+
+  if (filteredResults.length === 0) {
+    console.log(`[Mediathek] No results after filtering for movie`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
   // Match results against movie data
-  const matchResults = await matchMovieItems(allResults, movieData);
+  const matchResults = await matchMovieItems(filteredResults, movieData);
 
   if (matchResults.length === 0) {
     console.log(`[Mediathek] No matches found for movie`);

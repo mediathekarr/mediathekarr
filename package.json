@@ -4,7 +4,7 @@
   "private": true,
   "description": "Rundfunk indexer for Sonarr/Radarr",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src/",

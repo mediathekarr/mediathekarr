@@ -275,6 +275,7 @@ export default function SettingsPage() {
                       Welche Qualitäten sollen im Newznab-Feed angezeigt werden?
                     </p>
                   </div>
+
                   <Button
                     onClick={() => handleSave(["download.path", "download.quality"])}
                     disabled={isSaving}

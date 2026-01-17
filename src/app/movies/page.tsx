@@ -170,6 +170,16 @@ export default function MoviesPage() {
                       <Badge variant="secondary" className="text-xs">
                         {formatDuration(result.duration)}
                       </Badge>
+                      {result.title.includes("Gebärdensprache") && (
+                        <Badge className="text-xs bg-purple-600">DGS</Badge>
+                      )}
+                      {(result.title.includes("Audiodeskription") ||
+                        result.title.includes("Hörfassung")) && (
+                        <Badge className="text-xs bg-blue-600">AD</Badge>
+                      )}
+                      {result.title.includes("Untertitel") && (
+                        <Badge className="text-xs bg-green-600">UT</Badge>
+                      )}
                     </div>
                     <h3 className="font-medium">{result.topic}</h3>
                     {result.title !== result.topic && (

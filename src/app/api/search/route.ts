@@ -27,8 +27,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ results: [], error: "Query too short" });
   }
 
-  // For movie search, we need more results to filter from
-  const fetchSize = type === "movie" ? Math.max(limit * 3, 150) : limit;
+  // Fetch more results than needed because accessibility filtering may remove many
+  // For movie search: at least 3x limit or 150
+  // For regular search: at least 3x limit to ensure enough results after filtering
+  const fetchSize = type === "movie" ? Math.max(limit * 3, 150) : Math.max(limit * 3, 100);
 
   try {
     const requestBody = {
@@ -59,11 +61,8 @@ export async function GET(request: NextRequest) {
 
     const results: SearchResult[] = items
       .filter(
-        (item: { url_video: string; title: string; duration: number }) =>
-          !item.url_video.endsWith(".m3u8") &&
-          !item.title.includes("Audiodeskription") &&
-          !item.title.includes("Hörfassung") &&
-          item.duration >= minDuration
+        (item: { url_video: string; duration: number }) =>
+          !item.url_video.endsWith(".m3u8") && item.duration >= minDuration
       )
       .slice(0, limit)
       .map(
