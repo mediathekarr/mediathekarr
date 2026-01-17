@@ -20,10 +20,14 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const q = searchParams.get("q");
   const limit = parseInt(searchParams.get("limit") || "50", 10);
+  const type = searchParams.get("type"); // "movie" for movies only
 
   if (!q || q.trim().length < 2) {
     return NextResponse.json({ results: [], error: "Query too short" });
   }
+
+  // For movie search, we need more results to filter from
+  const fetchSize = type === "movie" ? Math.max(limit * 3, 150) : limit;
 
   try {
     const requestBody = {
@@ -32,7 +36,7 @@ export async function GET(request: NextRequest) {
       sortOrder: "desc",
       future: true,
       offset: 0,
-      size: limit,
+      size: fetchSize,
     };
 
     const response = await fetch(MEDIATHEK_API_URL, {
@@ -49,13 +53,18 @@ export async function GET(request: NextRequest) {
     const items = data.result?.results || [];
 
     // Filter out m3u8 streams and transform results
+    // For movies: only items >= 60 minutes (3600 seconds)
+    const minDuration = type === "movie" ? 3600 : 0;
+
     const results: SearchResult[] = items
       .filter(
-        (item: { url_video: string; title: string }) =>
+        (item: { url_video: string; title: string; duration: number }) =>
           !item.url_video.endsWith(".m3u8") &&
           !item.title.includes("Audiodeskription") &&
-          !item.title.includes("Hörfassung")
+          !item.title.includes("Hörfassung") &&
+          item.duration >= minDuration
       )
+      .slice(0, limit)
       .map(
         (item: {
           channel: string;
