@@ -27,7 +27,7 @@ export default function LogsPage() {
             die Konsole oder Docker-Logs eingesehen werden.
           </p>
           <div className="mt-4 bg-muted p-3 rounded-lg max-w-sm mx-auto text-left">
-            <p className="text-sm font-mono text-muted-foreground">docker logs mediathekarr</p>
+            <p className="text-sm font-mono text-muted-foreground">docker logs rundfunkarr</p>
           </div>
         </CardContent>
       </Card>

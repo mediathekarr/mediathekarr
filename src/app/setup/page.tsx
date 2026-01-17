@@ -167,10 +167,10 @@ export default function SetupPage() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Tv className="w-8 h-8 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Willkommen bei MediathekArr</h2>
+              <h2 className="text-2xl font-bold mb-2">Willkommen bei RundfunkArr</h2>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                MediathekArr indiziert Inhalte aus deutschen Mediatheken und macht sie für Sonarr
-                und Radarr verfügbar. Dieser Assistent hilft dir bei der Einrichtung.
+                RundfunkArr indiziert Inhalte aus deutschen Mediatheken und macht sie für Sonarr und
+                Radarr verfügbar. Dieser Assistent hilft dir bei der Einrichtung.
               </p>
               <Button onClick={() => setCurrentStep(1)} size="lg">
                 Los geht&apos;s
@@ -415,7 +415,7 @@ export default function SetupPage() {
               <div>
                 <h2 className="text-xl font-bold mb-2">*arr Integration</h2>
                 <p className="text-sm text-muted-foreground">
-                  Füge MediathekArr als Indexer zu deinen *arr Apps hinzu
+                  Füge RundfunkArr als Indexer zu deinen *arr Apps hinzu
                 </p>
               </div>
 
@@ -443,9 +443,7 @@ export default function SetupPage() {
                     <div className="bg-muted p-3 rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Name:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          MediathekArr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">URL:</span>
@@ -464,9 +462,7 @@ export default function SetupPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">API Key:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          mediathekarr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
                       </div>
                     </div>
 
@@ -487,9 +483,7 @@ export default function SetupPage() {
                     <div className="bg-muted p-3 rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Name:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          MediathekArr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">URL:</span>
@@ -508,9 +502,7 @@ export default function SetupPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">API Key:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          mediathekarr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
                       </div>
                     </div>
 
@@ -531,9 +523,7 @@ export default function SetupPage() {
                     <div className="bg-muted p-3 rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Name:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          MediathekArr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">URL:</span>
@@ -552,9 +542,7 @@ export default function SetupPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">API Key:</span>
-                        <code className="bg-background px-2 py-1 rounded text-sm">
-                          mediathekarr
-                        </code>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
                       </div>
                     </div>
 
@@ -589,7 +577,7 @@ export default function SetupPage() {
               </div>
               <h2 className="text-2xl font-bold mb-2">Setup abgeschlossen!</h2>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                MediathekArr ist jetzt eingerichtet. Du kannst die Einstellungen jederzeit unter
+                RundfunkArr ist jetzt eingerichtet. Du kannst die Einstellungen jederzeit unter
                 &quot;Settings&quot; anpassen.
               </p>
 

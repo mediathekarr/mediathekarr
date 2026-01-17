@@ -115,7 +115,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground text-sm">Konfiguriere MediathekArr</p>
+        <p className="text-muted-foreground text-sm">Konfiguriere RundfunkArr</p>
       </div>
 
       {/* Tabs */}
