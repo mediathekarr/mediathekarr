@@ -8,6 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Settings,
   Key,
   Sliders,
@@ -25,6 +35,17 @@ import packageJson from "../../../package.json";
 export default function SettingsPage() {
   const { settings, isLoading, updateSettings, refreshSettings } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [clearResult, setClearResult] = useState<{
+    show: boolean;
+    success: boolean;
+    message: string;
+  }>({
+    show: false,
+    success: false,
+    message: "",
+  });
   const [validatingApi, setValidatingApi] = useState<string | null>(null);
   const [apiStatus, setApiStatus] = useState<Record<string, boolean | null>>({});
 
@@ -97,9 +118,36 @@ export default function SettingsPage() {
     }
   };
 
-  const clearCache = async () => {
-    // This would need a backend endpoint
-    alert("Cache clearing not yet implemented");
+  const handleClearCache = async () => {
+    setShowClearConfirm(false);
+    setIsClearing(true);
+    try {
+      const res = await fetch("/api/cache", { method: "DELETE" });
+      const data = await res.json();
+
+      if (data.success) {
+        setClearResult({
+          show: true,
+          success: true,
+          message: `${data.cleared.tvdbSeries} Serien und ${data.cleared.tvdbEpisodes} Episoden gelöscht.`,
+        });
+      } else {
+        setClearResult({
+          show: true,
+          success: false,
+          message: "Fehler beim Leeren des Caches.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to clear cache:", error);
+      setClearResult({
+        show: true,
+        success: false,
+        message: "Fehler beim Leeren des Caches.",
+      });
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   if (isLoading) {
@@ -446,9 +494,17 @@ export default function SettingsPage() {
                       )}
                       Speichern
                     </Button>
-                    <Button variant="outline" onClick={clearCache}>
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Cache leeren
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowClearConfirm(true)}
+                      disabled={isClearing}
+                    >
+                      {isClearing ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4 mr-2" />
+                      )}
+                      {isClearing ? "Wird geleert..." : "Cache leeren"}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -496,6 +552,39 @@ export default function SettingsPage() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Clear Cache Confirmation Dialog */}
+      <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cache leeren?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Alle gecachten Daten werden gelöscht und bei der nächsten Anfrage neu geladen. Dies
+              betrifft Mediathek-Suchergebnisse und TVDB-Metadaten.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearCache}>Cache leeren</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear Cache Result Dialog */}
+      <AlertDialog
+        open={clearResult.show}
+        onOpenChange={(open) => setClearResult({ ...clearResult, show: open })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{clearResult.success ? "Cache geleert" : "Fehler"}</AlertDialogTitle>
+            <AlertDialogDescription>{clearResult.message}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
