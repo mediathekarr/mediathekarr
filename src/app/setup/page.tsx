@@ -41,9 +41,10 @@ export default function SetupPage() {
   const [localOverrides, setLocalOverrides] = useState<Record<string, string>>({});
 
   // Get value: local override > settings > default
+  // Note: Empty strings are valid values (e.g., cleared API keys)
   const getValue = (key: string, defaultValue: string) => {
     if (localOverrides[key] !== undefined) return localOverrides[key];
-    if (settings?.[key]) return settings[key];
+    if (settings?.[key] !== undefined && settings[key] !== null) return settings[key];
     return defaultValue;
   };
 

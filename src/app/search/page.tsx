@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Download } from "lucide-react";
+import { formatDuration, formatSize, formatDate } from "@/lib/formatters";
 
 interface SearchResult {
   id: string;
@@ -21,31 +22,6 @@ interface SearchResult {
   url_website: string;
 }
 
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-}
-
-function formatDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -57,10 +33,14 @@ export default function SearchPage() {
     setIsSearching(true);
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       setSearchResults(data.results || []);
     } catch (error) {
       console.error("Search failed:", error);
+      setSearchResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -90,6 +70,9 @@ export default function SearchPage() {
         method: "POST",
         body: nzbContent,
       });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       if (!data.status) {
         console.error("Download failed");

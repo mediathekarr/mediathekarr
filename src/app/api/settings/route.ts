@@ -117,9 +117,17 @@ export async function DELETE(request: NextRequest) {
     await prisma.config.delete({
       where: { key },
     });
+    clearSettingsCache();
+    if (key.startsWith("cache.")) {
+      clearTTLCache();
+    }
     return NextResponse.json({ success: true, key });
   } catch {
     // Key might not exist, which is fine
+    clearSettingsCache();
+    if (key.startsWith("cache.")) {
+      clearTTLCache();
+    }
     return NextResponse.json({ success: true, key });
   }
 }

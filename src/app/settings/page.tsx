@@ -78,6 +78,9 @@ export default function SettingsPage() {
   const fetchSystemInfo = async () => {
     try {
       const res = await fetch("/api/system");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       setSystemInfo(data);
     } catch (error) {
@@ -159,6 +162,9 @@ export default function SettingsPage() {
     setIsClearing(true);
     try {
       const res = await fetch("/api/cache", { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
 
       if (data.success) {

@@ -11,9 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, X, RotateCcw } from "lucide-react";
+import { formatSize } from "@/lib/formatters";
+import { getStatusBadge } from "@/components/shared/status-badge";
 
 interface QueueSlot {
   nzo_id: string;
@@ -36,31 +37,6 @@ interface HistorySlot {
   storage: string;
   bytes: number;
   fail_message: string;
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-}
-
-function getStatusBadge(status: string) {
-  switch (status.toLowerCase()) {
-    case "downloading":
-      return <Badge className="bg-blue-500">Downloading</Badge>;
-    case "extracting":
-      return <Badge className="bg-yellow-500">Converting</Badge>;
-    case "queued":
-      return <Badge variant="secondary">Queued</Badge>;
-    case "completed":
-      return <Badge className="bg-green-500">Completed</Badge>;
-    case "failed":
-      return <Badge variant="destructive">Failed</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
 }
 
 export default function DownloadsPage() {
@@ -98,6 +74,9 @@ export default function DownloadsPage() {
       const res = await fetch(
         `/api/download?mode=history&name=delete&value=${nzoId}&del_files=${delFiles ? 1 : 0}`
       );
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       if (data.status) {
         fetchData();
@@ -110,6 +89,9 @@ export default function DownloadsPage() {
   const handleRetry = async (nzoId: string) => {
     try {
       const res = await fetch(`/api/download?mode=history&name=retry&value=${nzoId}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       if (data.status) {
         fetchData();

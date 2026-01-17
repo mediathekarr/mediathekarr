@@ -54,11 +54,16 @@ export default function RulesetsPage() {
     setIsLoading(true);
     try {
       const res = await fetch("/api/rulesets");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       setRulesets(Array.isArray(data) ? data : []);
       setFilteredRulesets(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch rulesets:", error);
+      setRulesets([]);
+      setFilteredRulesets([]);
     } finally {
       setIsLoading(false);
     }

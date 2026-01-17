@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download, Search, ArrowRight, RefreshCw } from "lucide-react";
+import { formatSize, formatDateShort } from "@/lib/formatters";
+import { getStatusBadge } from "@/components/shared/status-badge";
 
 interface QueueSlot {
   nzo_id: string;
@@ -25,40 +27,6 @@ interface HistorySlot {
   status: string;
   completed: number;
   bytes: number;
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-}
-
-function formatDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function getStatusBadge(status: string) {
-  switch (status.toLowerCase()) {
-    case "downloading":
-      return <Badge className="bg-blue-500">Downloading</Badge>;
-    case "extracting":
-      return <Badge className="bg-yellow-500">Converting</Badge>;
-    case "queued":
-      return <Badge variant="secondary">Queued</Badge>;
-    case "completed":
-      return <Badge className="bg-green-500">Completed</Badge>;
-    case "failed":
-      return <Badge variant="destructive">Failed</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
 }
 
 export default function Dashboard() {
@@ -206,7 +174,7 @@ export default function Dashboard() {
                     <span className="truncate">{item.name}</span>
                   </div>
                   <div className="text-sm text-muted-foreground whitespace-nowrap ml-2">
-                    {formatDate(item.completed)} - {formatSize(item.bytes)}
+                    {formatDateShort(item.completed)} - {formatSize(item.bytes)}
                   </div>
                 </div>
               ))}

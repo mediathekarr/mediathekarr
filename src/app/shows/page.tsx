@@ -39,11 +39,16 @@ export default function ShowsPage() {
     setIsLoading(true);
     try {
       const res = await fetch("/api/shows");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       setShows(Array.isArray(data) ? data : []);
       setFilteredShows(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch shows:", error);
+      setShows([]);
+      setFilteredShows([]);
     } finally {
       setIsLoading(false);
     }

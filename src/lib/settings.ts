@@ -50,14 +50,17 @@ export async function getSettings(keys: string[]): Promise<Record<string, string
     const configMap = new Map(configs.map((c) => [c.key, c.value]));
 
     for (const key of keysToFetch) {
-      const value = configMap.get(key) || null;
-      if (value) {
+      const value = configMap.get(key);
+      if (value !== undefined) {
+        // Cache all values including empty strings
         settingsCache.set(key, {
           value,
           expiry: Date.now() + CACHE_TTL,
         });
+        result[key] = value;
+      } else {
+        result[key] = null;
       }
-      result[key] = value;
     }
   }
 
