@@ -3,17 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Search,
-  Download,
-  Tv,
-  Film,
-  Settings2,
-  FileText,
-  Settings,
-  Wand2,
-} from "lucide-react";
+import { LayoutDashboard, Search, Download, Tv, Settings2, Settings, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -33,13 +23,11 @@ const navGroups: { items: NavItem[] }[] = [
   {
     items: [
       { href: "/shows", label: "Shows", icon: Tv },
-      { href: "/movies", label: "Filme", icon: Film },
       { href: "/rulesets", label: "Rulesets", icon: Settings2 },
     ],
   },
   {
     items: [
-      { href: "/logs", label: "Logs", icon: FileText },
       { href: "/settings", label: "Settings", icon: Settings },
       { href: "/setup", label: "Setup", icon: Wand2 },
     ],
