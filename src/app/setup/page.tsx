@@ -33,15 +33,28 @@ const STEPS = [
 
 export default function SetupPage() {
   const router = useRouter();
-  const { updateSettings } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const [currentStep, setCurrentStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
 
-  // Form state
-  const [downloadPath, setDownloadPath] = useState("/downloads");
-  const [tvdbKey, setTvdbKey] = useState("");
-  const [tvdbPin, setTvdbPin] = useState("");
-  const [tmdbKey, setTmdbKey] = useState("");
+  // Form state - use settings as initial values, track local overrides
+  const [localOverrides, setLocalOverrides] = useState<Record<string, string>>({});
+
+  // Get value: local override > settings > default
+  const getValue = (key: string, defaultValue: string) => {
+    if (localOverrides[key] !== undefined) return localOverrides[key];
+    if (settings?.[key]) return settings[key];
+    return defaultValue;
+  };
+
+  const setValue = (key: string, value: string) => {
+    setLocalOverrides((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const downloadPath = getValue("download.path", "/downloads");
+  const tvdbKey = getValue("api.tvdb.key", "");
+  const tvdbPin = getValue("api.tvdb.pin", "");
+  const tmdbKey = getValue("api.tmdb.key", "");
 
   // Validation state
   const [pathValid, setPathValid] = useState<boolean | null>(null);
@@ -196,7 +209,7 @@ export default function SetupPage() {
                 <Input
                   value={downloadPath}
                   onChange={(e) => {
-                    setDownloadPath(e.target.value);
+                    setValue("download.path", e.target.value);
                     setPathValid(null);
                   }}
                   placeholder="/downloads"
@@ -261,12 +274,12 @@ export default function SetupPage() {
                 <CardContent className="space-y-3">
                   <Input
                     value={tvdbKey}
-                    onChange={(e) => setTvdbKey(e.target.value)}
+                    onChange={(e) => setValue("api.tvdb.key", e.target.value)}
                     placeholder="API Key"
                   />
                   <Input
                     value={tvdbPin}
-                    onChange={(e) => setTvdbPin(e.target.value)}
+                    onChange={(e) => setValue("api.tvdb.pin", e.target.value)}
                     placeholder="PIN"
                   />
                   {tvdbValid !== null && (
@@ -300,7 +313,7 @@ export default function SetupPage() {
                 <CardContent className="space-y-3">
                   <Input
                     value={tmdbKey}
-                    onChange={(e) => setTmdbKey(e.target.value)}
+                    onChange={(e) => setValue("api.tmdb.key", e.target.value)}
                     placeholder="API Key"
                   />
                   {tmdbValid !== null && (
