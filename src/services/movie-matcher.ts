@@ -27,7 +27,7 @@ async function getDurationTolerance(): Promise<number> {
 function normalizeTitle(title: string): string {
   return title
     .toLowerCase()
-    .replace(/[/:;,""''@#?$%^*+=!|<>()&]/g, "")
+    .replace(/[/:;,"'@#?$%^*+=!|<>()&""'']/g, "")
     .replace(/[-–—]/g, " ") // Normalize different dash types
     .replace(/\s+/g, " ")
     .trim();
