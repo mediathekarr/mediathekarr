@@ -99,14 +99,19 @@ export async function getQueue(): Promise<SabnzbdQueue> {
     if (d.status === "downloading") statusText = "Downloading";
     else if (d.status === "converting") statusText = "Extracting";
 
-    const totalMb = (d.totalSize / 1024 / 1024).toFixed(1);
-    const remainingBytes = d.totalSize - d.downloadedBytes;
-    const speedMbps = (d.speed / 1024 / 1024).toFixed(1);
+    // Convert BigInt to Number for arithmetic operations
+    const totalSizeNum = Number(d.totalSize);
+    const downloadedBytesNum = Number(d.downloadedBytes);
+    const speedNum = Number(d.speed);
+
+    const totalMb = (totalSizeNum / 1024 / 1024).toFixed(1);
+    const remainingBytes = totalSizeNum - downloadedBytesNum;
+    const speedMbps = (speedNum / 1024 / 1024).toFixed(1);
 
     // Calculate time left
     let timeleft = "";
-    if (d.status === "downloading" && d.speed > 0) {
-      const secondsLeft = Math.round(remainingBytes / d.speed);
+    if (d.status === "downloading" && speedNum > 0) {
+      const secondsLeft = Math.round(remainingBytes / speedNum);
       const hours = Math.floor(secondsLeft / 3600);
       const minutes = Math.floor((secondsLeft % 3600) / 60);
       const seconds = secondsLeft % 60;
@@ -158,7 +163,7 @@ export async function getHistory(): Promise<SabnzbdHistory> {
       completed: d.completedAt ? Math.floor(d.completedAt.getTime() / 1000) : 0,
       category: d.category,
       storage: storagePath,
-      bytes: d.size,
+      bytes: Number(d.size),
       fail_message: d.error || "",
     };
   });
