@@ -1,12 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/mediathekarr/schemas/rulesets.schema.json",
+  "$id": "https://github.com/rundfunkarr/schemas/rulesets.schema.json",
   "title": "Rulesets Data",
   "description": "Schema for rulesets.json - Media matching rules",
   "type": "array",
   "items": {
     "type": "object",
-    "required": ["id", "mediaId", "topic", "priority", "filters", "titleRegexRules", "episodeRegex", "seasonRegex", "matchingStrategy", "media"],
+    "required": [
+      "id",
+      "mediaId",
+      "topic",
+      "priority",
+      "filters",
+      "titleRegexRules",
+      "episodeRegex",
+      "seasonRegex",
+      "matchingStrategy",
+      "media"
+    ],
     "additionalProperties": false,
     "properties": {
       "id": {

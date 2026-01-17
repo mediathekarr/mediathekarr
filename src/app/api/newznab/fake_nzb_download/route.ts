@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 </nzb>`;
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const fileName = `mediathek-${timestamp}.nzb`;
+  const fileName = `rundfunk-${timestamp}.nzb`;
 
   return new NextResponse(nzbContent, {
     status: 200,

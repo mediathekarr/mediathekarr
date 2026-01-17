@@ -72,7 +72,7 @@ export function Sidebar({ className }: SidebarProps) {
             <Tv className="w-5 h-5 text-primary-foreground" />
           </div>
           <span className="font-bold text-lg whitespace-nowrap md:opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity">
-            MediathekArr
+            RundfunkArr
           </span>
         </Link>
       </div>

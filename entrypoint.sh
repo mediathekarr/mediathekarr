@@ -55,7 +55,7 @@ echo "Checking prisma directory..."
 ls -la /app/prisma/ 2>&1 || echo "Cannot list /app/prisma/"
 ls -la /app/prisma/data/ 2>&1 || echo "Cannot list /app/prisma/data/"
 
-DB_PATH="/app/prisma/data/mediathekarr.db"
+DB_PATH="/app/prisma/data/rundfunkarr.db"
 
 echo "Initializing database at $DB_PATH..."
 if su-exec "$USER_NAME" sqlite3 "$DB_PATH" < /app/init-db.sql 2>&1; then

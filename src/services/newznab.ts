@@ -38,8 +38,8 @@ export function generateAttributes(
 export function getEmptyRssResult(): NewznabRss {
   return {
     channel: {
-      title: "MediathekArr",
-      description: "MediathekArr API results",
+      title: "RundfunkArr",
+      description: "RundfunkArr API results",
       response: {
         offset: 0,
         total: 0,
@@ -103,8 +103,8 @@ export function convertItemsToRss(items: NewznabItem[], limit: number, offset: n
 
   const rss: NewznabRss = {
     channel: {
-      title: "MediathekArr",
-      description: "MediathekArr API results",
+      title: "RundfunkArr",
+      description: "RundfunkArr API results",
       response: {
         offset: offset,
         total: items.length,
@@ -302,7 +302,7 @@ export function generateFakeNzb(url: string, title: string): string {
   <head>
     <meta type="title">${title}</meta>
   </head>
-  <file poster="MediathekArr" date="${Math.floor(Date.now() / 1000)}" subject="${title}">
+  <file poster="RundfunkArr" date="${Math.floor(Date.now() / 1000)}" subject="${title}">
     <groups>
       <group>alt.binaries.mediathek</group>
     </groups>
@@ -320,7 +320,7 @@ export function getCapabilitiesXml(): string {
       server: {
         $: {
           version: "1.0",
-          title: "MediathekArr",
+          title: "RundfunkArr",
           strapline: "German Public TV Indexer",
           email: "",
           url: "",

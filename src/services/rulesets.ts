@@ -16,13 +16,13 @@ const REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 // GitHub raw URLs for auto-update
 const GITHUB_RULESETS_URL =
   process.env.RULESETS_URL ||
-  "https://raw.githubusercontent.com/mediathekarr/mediathekarr/main/data/rulesets.json";
+  "https://raw.githubusercontent.com/rundfunkarr/rundfunkarr/main/data/rulesets.json";
 
 async function fetchFromGitHub(): Promise<Ruleset[] | null> {
   try {
     console.log(`[Rulesets] Fetching from GitHub: ${GITHUB_RULESETS_URL}`);
     const response = await fetch(GITHUB_RULESETS_URL, {
-      headers: { "User-Agent": "MediathekArr" },
+      headers: { "User-Agent": "RundfunkArr" },
     });
 
     if (!response.ok) {

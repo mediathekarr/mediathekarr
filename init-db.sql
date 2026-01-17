@@ -1,4 +1,4 @@
--- Initialize MediathekArr database schema
+-- Initialize RundfunkArr database schema
 
 CREATE TABLE IF NOT EXISTS TvdbSeries (
     id INTEGER PRIMARY KEY,
