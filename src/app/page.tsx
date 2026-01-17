@@ -1,34 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import packageJson from "../../package.json";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-interface SearchResult {
-  id: string;
-  channel: string;
-  topic: string;
-  title: string;
-  description: string;
-  timestamp: number;
-  duration: number;
-  size: number;
-  url_video: string;
-  url_video_hd: string;
-  url_website: string;
-}
+import { Button } from "@/components/ui/button";
+import { Download, Search, ArrowRight, RefreshCw } from "lucide-react";
 
 interface QueueSlot {
   nzo_id: string;
@@ -36,7 +14,6 @@ interface QueueSlot {
   status: string;
   percentage: string;
   timeleft: string;
-  cat: string;
   mb: string;
   mbleft: string;
   speed: string;
@@ -47,17 +24,7 @@ interface HistorySlot {
   name: string;
   status: string;
   completed: number;
-  category: string;
-  storage: string;
   bytes: number;
-  fail_message: string;
-}
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
 }
 
 function formatSize(bytes: number): string {
@@ -72,22 +39,34 @@ function formatDate(timestamp: number): string {
   return new Date(timestamp * 1000).toLocaleDateString("de-DE", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+function getStatusBadge(status: string) {
+  switch (status.toLowerCase()) {
+    case "downloading":
+      return <Badge className="bg-blue-500">Downloading</Badge>;
+    case "extracting":
+      return <Badge className="bg-yellow-500">Converting</Badge>;
+    case "queued":
+      return <Badge variant="secondary">Queued</Badge>;
+    case "completed":
+      return <Badge className="bg-green-500">Completed</Badge>;
+    case "failed":
+      return <Badge variant="destructive">Failed</Badge>;
+    default:
+      return <Badge variant="outline">{status}</Badge>;
+  }
+}
+
+export default function Dashboard() {
   const [queue, setQueue] = useState<QueueSlot[]>([]);
   const [history, setHistory] = useState<HistorySlot[]>([]);
-  const [isLoadingQueue, setIsLoadingQueue] = useState(true);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchQueue = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [queueRes, historyRes] = await Promise.all([
         fetch("/api/download?mode=queue"),
@@ -96,292 +75,145 @@ export default function Home() {
       const queueData = await queueRes.json();
       const historyData = await historyRes.json();
       setQueue(queueData.queue?.slots || []);
-      setHistory(historyData.history?.slots || []);
-      setLastRefresh(new Date());
+      setHistory((historyData.history?.slots || []).slice(0, 5));
     } catch (error) {
-      console.error("Failed to fetch queue:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
-      setIsLoadingQueue(false);
+      setIsLoading(false);
     }
   }, []);
 
-  // Auto-refresh every 5 seconds
   useEffect(() => {
-    fetchQueue();
-    const interval = setInterval(fetchQueue, 5000);
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, [fetchQueue]);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`);
-      const data = await res.json();
-      setSearchResults(data.results || []);
-    } catch (error) {
-      console.error("Search failed:", error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  const handleDownload = async (result: SearchResult) => {
-    // Create NZB content with URL - format must match parseNzbContent regex
-    const fileName = `${result.topic} - ${result.title}`.replace(/[<>:"/\\|?*]/g, "_");
-    const nzbContent = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.1//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.1.dtd">
-<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
-  <head>
-    <meta type="filename" filename="${fileName}.nzb"/>
-  </head>
-  <!-- ${result.url_video_hd || result.url_video} -->
-</nzb>`;
-
-    try {
-      const res = await fetch("/api/download?mode=addfile&cat=default", {
-        method: "POST",
-        body: nzbContent,
-      });
-      const data = await res.json();
-      if (data.status) {
-        fetchQueue();
-      }
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
-
-  const handleDelete = async (nzoId: string, delFiles: boolean = false) => {
-    try {
-      const res = await fetch(
-        `/api/download?mode=history&name=delete&value=${nzoId}&del_files=${delFiles ? 1 : 0}`
-      );
-      const data = await res.json();
-      if (data.status) {
-        fetchQueue();
-      }
-    } catch (error) {
-      console.error("Delete failed:", error);
-    }
-  };
-
-  const handleRetry = async (nzoId: string) => {
-    try {
-      const res = await fetch(`/api/download?mode=history&name=retry&value=${nzoId}`);
-      const data = await res.json();
-      if (data.status) {
-        fetchQueue();
-      }
-    } catch (error) {
-      console.error("Retry failed:", error);
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "downloading":
-        return <Badge className="bg-blue-500">Downloading</Badge>;
-      case "extracting":
-        return <Badge className="bg-yellow-500">Converting</Badge>;
-      case "queued":
-        return <Badge variant="secondary">Queued</Badge>;
-      case "completed":
-        return <Badge className="bg-green-500">Completed</Badge>;
-      case "failed":
-        return <Badge variant="destructive">Failed</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  }, [fetchData]);
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">MediathekArr</h1>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground text-sm">Willkommen bei MediathekArr</p>
+        </div>
         <Badge variant="outline" className="text-xs">
           v{packageJson.version}
         </Badge>
       </div>
 
-      {/* Search Section */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Mediathek durchsuchen</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Suchbegriff eingeben..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1"
-            />
-            <Button onClick={handleSearch} disabled={isSearching}>
-              {isSearching ? "Suche..." : "Suchen"}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link href="/search">
+          <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Search className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-medium">Mediathek durchsuchen</h3>
+                <p className="text-sm text-muted-foreground">Finde Sendungen in der Mediathek</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/downloads">
+          <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Download className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-medium">Downloads verwalten</h3>
+                <p className="text-sm text-muted-foreground">
+                  {queue.length} aktiv, {history.length > 0 ? `${history.length}+` : "0"} in History
+                </p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Active Downloads */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Aktive Downloads</CardTitle>
+            <Button variant="ghost" size="sm" onClick={fetchData}>
+              <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
-
-          {/* Search Results */}
-          {searchResults.length > 0 && (
-            <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
-              {searchResults.map((result) => (
-                <Card key={result.id} className="p-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs">
-                          {result.channel}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">{result.topic}</span>
-                      </div>
-                      <h3 className="font-medium truncate">{result.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDate(result.timestamp)} • {formatDuration(result.duration)} •{" "}
-                        {formatSize(result.size)}
-                      </p>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <p className="text-muted-foreground text-center py-4">Laden...</p>
+          ) : queue.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">Keine aktiven Downloads</p>
+          ) : (
+            <div className="space-y-3">
+              {queue.map((item) => (
+                <div
+                  key={item.nzo_id}
+                  className="flex items-center gap-4 p-3 bg-muted/50 rounded-lg"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{item.filename}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {getStatusBadge(item.status)}
+                      <span className="text-xs text-muted-foreground">
+                        {item.speed} - {item.timeleft} verbleibend
+                      </span>
                     </div>
-                    <Button size="sm" onClick={() => handleDownload(result)}>
-                      Download
-                    </Button>
                   </div>
-                </Card>
+                  <div className="text-right">
+                    <p className="font-medium">{item.percentage}%</p>
+                    <p className="text-xs text-muted-foreground">{item.mb} MB</p>
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Queue & History Section */}
+      {/* Recent Activity */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle>Downloads</CardTitle>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                Aktualisiert: {lastRefresh.toLocaleTimeString("de-DE")}
-              </span>
-              <Button variant="outline" size="sm" onClick={fetchQueue}>
-                ↻ Aktualisieren
+            <CardTitle className="text-lg">Letzte Aktivitäten</CardTitle>
+            <Link href="/downloads">
+              <Button variant="ghost" size="sm">
+                Alle anzeigen
+                <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
-            </div>
+            </Link>
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="queue">
-            <TabsList className="mb-4">
-              <TabsTrigger value="queue">Queue ({queue.length})</TabsTrigger>
-              <TabsTrigger value="history">History ({history.length})</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="queue">
-              {isLoadingQueue ? (
-                <p className="text-muted-foreground text-center py-8">Laden...</p>
-              ) : queue.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">Keine aktiven Downloads</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Fortschritt</TableHead>
-                      <TableHead>Größe</TableHead>
-                      <TableHead>Geschw.</TableHead>
-                      <TableHead>Verbleibend</TableHead>
-                      <TableHead className="w-24">Aktionen</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {queue.map((item) => (
-                      <TableRow key={item.nzo_id}>
-                        <TableCell className="font-medium max-w-xs truncate">
-                          {item.filename}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(item.status)}</TableCell>
-                        <TableCell>{item.percentage}%</TableCell>
-                        <TableCell>{item.mb} MB</TableCell>
-                        <TableCell>{item.speed}</TableCell>
-                        <TableCell>{item.timeleft}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(item.nzo_id)}
-                            title="Abbrechen"
-                          >
-                            ✕
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </TabsContent>
-
-            <TabsContent value="history">
-              {history.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  Keine Downloads in der History
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Abgeschlossen</TableHead>
-                      <TableHead>Größe</TableHead>
-                      <TableHead className="w-24">Aktionen</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {history.map((item) => (
-                      <TableRow key={item.nzo_id}>
-                        <TableCell className="font-medium max-w-xs truncate">{item.name}</TableCell>
-                        <TableCell>{getStatusBadge(item.status)}</TableCell>
-                        <TableCell>
-                          {new Date(item.completed * 1000).toLocaleDateString("de-DE")}
-                        </TableCell>
-                        <TableCell>{formatSize(item.bytes)}</TableCell>
-                        <TableCell className="flex gap-1">
-                          {item.status.toLowerCase() === "failed" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRetry(item.nzo_id)}
-                              title="Erneut versuchen"
-                            >
-                              ↻
-                            </Button>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(item.nzo_id, true)}
-                            title="Löschen"
-                          >
-                            ✕
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </TabsContent>
-          </Tabs>
+          {history.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">Keine Downloads in der History</p>
+          ) : (
+            <div className="space-y-2">
+              {history.map((item) => (
+                <div
+                  key={item.nzo_id}
+                  className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {getStatusBadge(item.status)}
+                    <span className="truncate">{item.name}</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground whitespace-nowrap ml-2">
+                    {formatDate(item.completed)} - {formatSize(item.bytes)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }
