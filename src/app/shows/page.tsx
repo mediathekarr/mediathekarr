@@ -144,7 +144,7 @@ export default function ShowsPage() {
                           : "-"}
                       </TableCell>
                       <TableCell>
-                        {show.slug && (
+                        {show.slug ? (
                           <a
                             href={`https://thetvdb.com/series/${show.slug}`}
                             target="_blank"
@@ -153,6 +153,8 @@ export default function ShowsPage() {
                           >
                             TVDB <ExternalLink className="w-3 h-3" />
                           </a>
+                        ) : (
+                          "-"
                         )}
                       </TableCell>
                     </TableRow>

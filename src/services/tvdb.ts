@@ -216,6 +216,8 @@ async function fetchAndCacheSeriesData(tvdbId: number): Promise<TvdbData | null>
           id: tvdbId,
           name: series.name,
           germanName: germanName,
+          slug: series.slug || null,
+          firstAired: series.firstAired ? new Date(series.firstAired) : null,
           aliases: JSON.stringify(germanAliases),
           expiresAt: cacheExpiry,
         },
