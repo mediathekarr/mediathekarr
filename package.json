@@ -1,8 +1,8 @@
 {
-  "name": "mediathekarr-next",
+  "name": "rundfunkarr-next",
   "version": "0.1.0",
   "private": true,
-  "description": "Mediathek indexer for Sonarr/Radarr - Next.js version",
+  "description": "Rundfunk indexer for Sonarr/Radarr - Next.js version",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

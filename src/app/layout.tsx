@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MediathekArr",
-  description: "Mediathek indexer for Sonarr/Radarr",
+  title: "RundfunkArr",
+  description: "Rundfunk indexer for Sonarr/Radarr",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

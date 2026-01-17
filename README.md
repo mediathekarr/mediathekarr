@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="public/logo.png" alt="MediathekArr Logo" width="128">
+  <img src="public/logo.png" alt="RundfunkArr Logo" width="128">
 </p>
 
-# MediathekArr
+# RundfunkArr
 
-[![GitHub Release](https://img.shields.io/github/v/release/mediathekarr/mediathekarr?logo=github&label=Release)](https://github.com/mediathekarr/mediathekarr/releases)
-[![License](https://img.shields.io/github/license/mediathekarr/mediathekarr?label=License)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/mediathekarr/mediathekarr?style=flat&logo=github&label=Stars)](https://github.com/mediathekarr/mediathekarr)
-[![GitHub Issues](https://img.shields.io/github/issues/mediathekarr/mediathekarr?logo=github&label=Issues)](https://github.com/mediathekarr/mediathekarr/issues)
+[![GitHub Release](https://img.shields.io/github/v/release/rundfunkarr/rundfunkarr?logo=github&label=Release)](https://github.com/rundfunkarr/rundfunkarr/releases)
+[![License](https://img.shields.io/github/license/rundfunkarr/rundfunkarr?label=License)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/rundfunkarr/rundfunkarr?style=flat&logo=github&label=Stars)](https://github.com/rundfunkarr/rundfunkarr)
+[![GitHub Issues](https://img.shields.io/github/issues/rundfunkarr/rundfunkarr?logo=github&label=Issues)](https://github.com/rundfunkarr/rundfunkarr/issues)
 
-Mediathek-Indexer für Sonarr/Radarr - Automatischer Download von ARD, ZDF und anderen deutschen Mediatheken.
+Rundfunk-Indexer für Sonarr/Radarr - Automatischer Download von ARD, ZDF und anderen deutschen Mediatheken.
 
 ## Screenshots
 
@@ -33,9 +33,9 @@ Mediathek-Indexer für Sonarr/Radarr - Automatischer Download von ARD, ZDF und a
 
 ```yaml
 services:
-  mediathekarr:
-    image: mediathekarr/mediathekarr:latest
-    container_name: mediathekarr
+  rundfunkarr:
+    image: rundfunkarr/rundfunkarr:latest
+    container_name: rundfunkarr
     environment:
       - TZ=Europe/Berlin
       - PUID=1000                           # User ID (id -u)
@@ -95,11 +95,11 @@ npm start
 | `TMDB_API_KEY` | TMDB API Key (kostenlos) | - |
 | `DOWNLOAD_FOLDER_PATH` | Pfad für fertige Downloads im Container | `/downloads` |
 | `DOWNLOAD_TEMP_PATH` | Pfad für laufende Downloads (incomplete) | `$DOWNLOAD_FOLDER_PATH/incomplete` |
-| `DATABASE_URL` | SQLite Datenbank-Pfad | `file:./prisma/data/mediathekarr.db` |
+| `DATABASE_URL` | SQLite Datenbank-Pfad | `file:./prisma/data/rundfunkarr.db` |
 
 ### Metadaten-Quellen
 
-MediathekArr sucht Show-Informationen in folgender Reihenfolge:
+RundfunkArr sucht Show-Informationen in folgender Reihenfolge:
 
 1. **Lokale Datenbank** (`data/shows.json`) - Kein API Key nötig
 2. **TVDB** - Wenn `TVDB_API_KEY` konfiguriert (kostenpflichtig)
@@ -133,13 +133,13 @@ Für Shows die nicht in TVDB/TMDB sind, können Einträge in `data/shows.json` h
 ### Als Indexer (in Prowlarr oder direkt)
 
 1. Indexer hinzufügen → Generic Newznab
-2. URL: `http://mediathekarr:6767/api/newznab`
+2. URL: `http://rundfunkarr:6767/api/newznab`
 3. API Key: beliebig (wird nicht validiert)
 
 ### Als Download Client
 
 1. Download Client hinzufügen → SABnzbd
-2. Host: `mediathekarr`
+2. Host: `rundfunkarr`
 3. Port: `6767`
 4. API Key: beliebig
 
@@ -228,7 +228,7 @@ data/
 
 ## Credits
 
-- [PCJones/MediathekArr](https://github.com/PCJones/MediathekArr) - Original .NET Implementation
+- [PCJones/RundfunkArr](https://github.com/PCJones/MediathekArr) - Original .NET Implementation
 - [MediathekViewWeb](https://github.com/mediathekview/mediathekviewweb) - Mediathek API
 - [TheTVDB](https://thetvdb.com) - Metadaten API
 - [TMDB](https://www.themoviedb.org) - Metadaten API

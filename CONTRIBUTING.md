@@ -1,6 +1,6 @@
-# Beitragen zu MediathekArr
+# Beitragen zu RundfunkArr
 
-Vielen Dank für dein Interesse an MediathekArr! Wir freuen uns über jede Art von Beitrag.
+Vielen Dank für dein Interesse an RundfunkArr! Wir freuen uns über jede Art von Beitrag.
 
 ## Sprache
 
@@ -22,8 +22,8 @@ Vielen Dank für dein Interesse an MediathekArr! Wir freuen uns über jede Art v
 
 ```bash
 # Repository klonen
-git clone https://github.com/your-username/mediathekarr.git
-cd mediathekarr
+git clone https://github.com/your-username/rundfunkarr.git
+cd rundfunkarr
 
 # Dependencies installieren
 npm install

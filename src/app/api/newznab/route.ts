@@ -98,12 +98,12 @@ export async function GET(request: NextRequest) {
           const dummyRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
   <channel>
-    <title>MediathekArr</title>
-    <description>MediathekArr API results</description>
+    <title>RundfunkArr</title>
+    <description>RundfunkArr API results</description>
     <newznab:response offset="0" total="1"/>
     <item>
-      <title>MediathekArr Test - Indexer funktioniert</title>
-      <guid>mediathekarr-test-item</guid>
+      <title>RundfunkArr Test - Indexer funktioniert</title>
+      <guid>rundfunkarr-test-item</guid>
       <pubDate>${new Date().toUTCString()}</pubDate>
       <category>5000</category>
       <enclosure url="http://localhost/test.nzb" length="1000000" type="application/x-nzb"/>

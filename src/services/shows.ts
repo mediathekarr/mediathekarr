@@ -28,13 +28,13 @@ const SHOWS_REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 // GitHub raw URL for auto-update
 const GITHUB_SHOWS_URL =
   process.env.SHOWS_URL ||
-  "https://raw.githubusercontent.com/mediathekarr/mediathekarr/main/data/shows.json";
+  "https://raw.githubusercontent.com/rundfunkarr/rundfunkarr/main/data/shows.json";
 
 async function fetchShowsFromGitHub(): Promise<LocalShow[] | null> {
   try {
     console.log(`[Shows] Fetching from GitHub: ${GITHUB_SHOWS_URL}`);
     const response = await fetch(GITHUB_SHOWS_URL, {
-      headers: { "User-Agent": "MediathekArr" },
+      headers: { "User-Agent": "RundfunkArr" },
     });
 
     if (!response.ok) {

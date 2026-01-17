@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/mediathekarr/schemas/shows.schema.json",
+  "$id": "https://github.com/rundfunkarr/schemas/shows.schema.json",
   "title": "Shows Data",
   "description": "Schema for shows.json - TVDB show data with episodes",
   "type": "array",

@@ -205,7 +205,7 @@ export default function Home() {
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">MediathekArr</h1>
+        <h1 className="text-3xl font-bold">RundfunkArr</h1>
         <Badge variant="outline" className="text-xs">
           v{packageJson.version}
         </Badge>
