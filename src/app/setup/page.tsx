@@ -448,6 +448,9 @@ export default function SetupPage() {
 
                 <TabsContent value="sonarr" className="space-y-4 mt-4">
                   <div className="space-y-3">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Indexer
+                    </h3>
                     <p className="font-medium">1. Öffne Sonarr → Settings → Indexers</p>
                     <p className="font-medium">
                       2. Klicke auf &quot;+&quot; und wähle &quot;Newznab&quot;
@@ -483,11 +486,75 @@ export default function SetupPage() {
                     <p className="font-medium">
                       4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
                     </p>
+
+                    <hr className="my-4" />
+
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Download Client
+                    </h3>
+                    <p className="font-medium">1. Öffne Sonarr → Settings → Download Clients</p>
+                    <p className="font-medium">
+                      2. Klicke auf &quot;+&quot; und wähle &quot;SABnzbd&quot;
+                    </p>
+                    <p className="font-medium">3. Trage folgende Werte ein:</p>
+
+                    <div className="bg-muted p-3 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Name:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
+                      </div>
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <span className="text-sm">Host:</span>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-background px-2 py-1 rounded text-sm">
+                            {typeof window !== "undefined" ? window.location.hostname : "localhost"}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              copyToClipboard(
+                                typeof window !== "undefined"
+                                  ? window.location.hostname
+                                  : "localhost"
+                              )
+                            }
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Port:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">
+                          {typeof window !== "undefined" ? window.location.port || "3000" : "3000"}
+                        </code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">API Key:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Category:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">sonarr</code>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Docker: Verwende den Container-Namen (z.B.{" "}
+                      <code className="bg-muted px-1 rounded">rundfunkarr</code>) statt localhost.
+                    </p>
+
+                    <p className="font-medium">
+                      4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
+                    </p>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="radarr" className="space-y-4 mt-4">
                   <div className="space-y-3">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Indexer
+                    </h3>
                     <p className="font-medium">1. Öffne Radarr → Settings → Indexers</p>
                     <p className="font-medium">
                       2. Klicke auf &quot;+&quot; und wähle &quot;Newznab&quot;
@@ -523,11 +590,75 @@ export default function SetupPage() {
                     <p className="font-medium">
                       4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
                     </p>
+
+                    <hr className="my-4" />
+
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Download Client
+                    </h3>
+                    <p className="font-medium">1. Öffne Radarr → Settings → Download Clients</p>
+                    <p className="font-medium">
+                      2. Klicke auf &quot;+&quot; und wähle &quot;SABnzbd&quot;
+                    </p>
+                    <p className="font-medium">3. Trage folgende Werte ein:</p>
+
+                    <div className="bg-muted p-3 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Name:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Host:</span>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-background px-2 py-1 rounded text-sm">
+                            {typeof window !== "undefined" ? window.location.hostname : "localhost"}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              copyToClipboard(
+                                typeof window !== "undefined"
+                                  ? window.location.hostname
+                                  : "localhost"
+                              )
+                            }
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Port:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">
+                          {typeof window !== "undefined" ? window.location.port || "3000" : "3000"}
+                        </code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">API Key:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Category:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">radarr</code>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Docker: Verwende den Container-Namen (z.B.{" "}
+                      <code className="bg-muted px-1 rounded">rundfunkarr</code>) statt localhost.
+                    </p>
+
+                    <p className="font-medium">
+                      4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
+                    </p>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="prowlarr" className="space-y-4 mt-4">
                   <div className="space-y-3">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Indexer
+                    </h3>
                     <p className="font-medium">1. Öffne Prowlarr → Indexers</p>
                     <p className="font-medium">
                       2. Klicke auf &quot;+&quot; und wähle &quot;Generic Newznab&quot;
@@ -563,8 +694,70 @@ export default function SetupPage() {
                     <p className="font-medium">
                       4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
                     </p>
+
+                    <hr className="my-4" />
+
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                      Download Client
+                    </h3>
+                    <p className="font-medium">1. Öffne Prowlarr → Settings → Download Clients</p>
+                    <p className="font-medium">
+                      2. Klicke auf &quot;+&quot; und wähle &quot;SABnzbd&quot;
+                    </p>
+                    <p className="font-medium">3. Trage folgende Werte ein:</p>
+
+                    <div className="bg-muted p-3 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Name:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">RundfunkArr</code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Host:</span>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-background px-2 py-1 rounded text-sm">
+                            {typeof window !== "undefined" ? window.location.hostname : "localhost"}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              copyToClipboard(
+                                typeof window !== "undefined"
+                                  ? window.location.hostname
+                                  : "localhost"
+                              )
+                            }
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Port:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">
+                          {typeof window !== "undefined" ? window.location.port || "3000" : "3000"}
+                        </code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">API Key:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">rundfunkarr</code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Default Category:</span>
+                        <code className="bg-background px-2 py-1 rounded text-sm">sonarr</code>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Docker: Verwende den Container-Namen (z.B.{" "}
+                      <code className="bg-muted px-1 rounded">rundfunkarr</code>) statt localhost.
+                    </p>
+
+                    <p className="font-medium">
+                      4. Klicke &quot;Test&quot; und dann &quot;Save&quot;
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      Prowlarr synct den Indexer automatisch zu deinen anderen *arr Apps.
+                      Prowlarr synct Indexer und Download-Client automatisch zu deinen anderen *arr
+                      Apps.
                     </p>
                   </div>
                 </TabsContent>

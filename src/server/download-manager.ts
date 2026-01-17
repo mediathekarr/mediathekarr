@@ -5,10 +5,20 @@ import { createWriteStream } from "fs";
 import * as path from "path";
 
 const MAX_CONCURRENT_DOWNLOADS = 1;
-const DOWNLOAD_BASE_PATH =
-  process.env.DOWNLOAD_FOLDER_PATH || path.join(process.cwd(), "downloads");
-const DOWNLOAD_TEMP_PATH =
-  process.env.DOWNLOAD_TEMP_PATH || path.join(DOWNLOAD_BASE_PATH, "incomplete");
+
+async function getDownloadBasePath(): Promise<string> {
+  const { getSetting } = await import("@/lib/settings");
+  return (
+    (await getSetting("download.path")) ||
+    process.env.DOWNLOAD_FOLDER_PATH ||
+    path.join(process.cwd(), "downloads")
+  );
+}
+
+async function getDownloadTempPath(): Promise<string> {
+  const basePath = await getDownloadBasePath();
+  return process.env.DOWNLOAD_TEMP_PATH || path.join(basePath, "incomplete");
+}
 
 // Semaphore implementation for limiting concurrent downloads
 class Semaphore {
@@ -105,15 +115,17 @@ async function processDownload(downloadId: string): Promise<void> {
     });
 
     // Create temp and category directories
-    const categoryDir = path.join(DOWNLOAD_BASE_PATH, download.category);
-    await fs.mkdir(DOWNLOAD_TEMP_PATH, { recursive: true });
+    const downloadBasePath = await getDownloadBasePath();
+    const downloadTempPath = await getDownloadTempPath();
+    const categoryDir = path.join(downloadBasePath, download.category);
+    await fs.mkdir(downloadTempPath, { recursive: true });
     await fs.mkdir(categoryDir, { recursive: true });
 
     // Determine file extension from URL
     const urlPath = new URL(download.url).pathname;
     const fileExtension = path.extname(urlPath) || ".mp4";
     // Download to temp folder first
-    const tempMp4Path = path.join(DOWNLOAD_TEMP_PATH, `${download.title}${fileExtension}`);
+    const tempMp4Path = path.join(downloadTempPath, `${download.title}${fileExtension}`);
     const mp4Path = tempMp4Path;
 
     // Download the file
@@ -143,7 +155,7 @@ async function processDownload(downloadId: string): Promise<void> {
     // Convert to MKV if it's an MP4
     if (fileExtension === ".mp4") {
       // Convert in temp folder first
-      const tempMkvPath = path.join(DOWNLOAD_TEMP_PATH, `${download.title}.mkv`);
+      const tempMkvPath = path.join(downloadTempPath, `${download.title}.mkv`);
       const finalMkvPath = path.join(categoryDir, `${download.title}.mkv`);
 
       console.log(`[Download] Converting to MKV: ${tempMkvPath}`);

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ version: "4.3.3" });
 
     case "get_config":
-      return NextResponse.json(getConfigResponse());
+      return NextResponse.json(await getConfigResponse());
 
     case "queue": {
       const queue = await getQueue();

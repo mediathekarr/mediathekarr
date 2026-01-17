@@ -210,8 +210,10 @@ export async function retryDownload(nzoId: string): Promise<{ id: string } | nul
   return addToQueue(download.url, download.title, download.category);
 }
 
-export function getConfigResponse(): object {
-  const downloadPath = process.env.DOWNLOAD_FOLDER_PATH || "/downloads";
+export async function getConfigResponse(): Promise<object> {
+  const { getSetting } = await import("@/lib/settings");
+  const downloadPath =
+    (await getSetting("download.path")) || process.env.DOWNLOAD_FOLDER_PATH || "/downloads";
 
   return {
     config: {
@@ -220,7 +222,8 @@ export function getConfigResponse(): object {
         enable_tv_sorting: false,
         enable_movie_sorting: false,
         pre_check: false,
-        history_retention: "all",
+        history_retention: "-1",
+        history_retention_option: "all",
       },
       categories: [
         { name: "sonarr", pp: "", script: "Default", dir: "", priority: -100 },
