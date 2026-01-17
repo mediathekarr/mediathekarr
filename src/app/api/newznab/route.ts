@@ -4,6 +4,7 @@ import {
   fetchSearchResultsByString,
   fetchSearchResultsForRssSync,
   fetchMovieSearchResults,
+  fetchMovieSearchByQuery,
 } from "@/services/mediathek";
 import { getShowInfoByTvdbId } from "@/services/shows";
 import { getMovieInfoByTmdbId, getMovieInfoByImdbId } from "@/services/tmdb";
@@ -151,6 +152,30 @@ export async function GET(request: NextRequest) {
 
   // Handle TV search requests
   if (t === "tvsearch" || t === "search") {
+    const cat = searchParams.get("cat");
+
+    // Check if this is a movie search (by category)
+    const movieCategories = ["2000", "2010", "2020", "2030", "2040", "2045", "2050", "2060"];
+    const isMovieSearch = cat && movieCategories.some((c) => cat.includes(c));
+
+    if (isMovieSearch && q) {
+      console.log(`[Newznab] Movie search via t=search detected: q=${q}, cat=${cat}`);
+
+      try {
+        const searchResults = await fetchMovieSearchByQuery(q, limit, offset);
+        return new NextResponse(searchResults, {
+          status: 200,
+          headers: { "Content-Type": "application/xml; charset=utf-8" },
+        });
+      } catch (error) {
+        console.error("Movie search by query error:", error);
+        return NextResponse.json(
+          { error: error instanceof Error ? error.message : "Unknown error" },
+          { status: 400 }
+        );
+      }
+    }
+
     console.log(
       `[Newznab] TV search request: t=${t}, q=${q}, tvdbid=${tvdbid}, season=${season}, episode=${episode}`
     );

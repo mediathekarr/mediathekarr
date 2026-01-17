@@ -993,3 +993,170 @@ export async function fetchMovieSearchResults(
   mediathekCache.set(cacheKey, { response });
   return response;
 }
+
+/**
+ * Search for movies in the Mediathek by query string (for Radarr text search)
+ * Filters by minimum duration to identify feature films
+ */
+export async function fetchMovieSearchByQuery(
+  query: string,
+  limit: number,
+  offset: number
+): Promise<string> {
+  const quality = await getQualityPreference();
+  const MOVIE_MIN_DURATION = 60 * 60; // 60 minutes in seconds
+  console.log(
+    `[Mediathek] fetchMovieSearchByQuery: query="${query}", quality=${quality}, minDuration=${MOVIE_MIN_DURATION}s`
+  );
+
+  const cacheKey = `movie_query_${query}_${limit}_${offset}_${quality}`;
+
+  const cached = mediathekCache.get(cacheKey);
+  if (cached && typeof cached === "object" && "response" in cached) {
+    console.log(`[Mediathek] Returning cached movie query response for ${cacheKey}`);
+    return (cached as { response: string }).response;
+  }
+
+  // Search Mediathek by query
+  const apiCacheKey = `mediathekapi_movie_query_${query}`;
+  let apiResponse: string;
+  const cachedApi = mediathekCache.get(apiCacheKey);
+
+  if (cachedApi) {
+    console.log(`[Mediathek] Using cached API response for movie query: "${query}"`);
+    apiResponse = (cachedApi as { response: string }).response;
+  } else {
+    console.log(`[Mediathek] Searching MediathekView API for movie query: "${query}"`);
+    const queries = [{ fields: QUERY_FIELDS, query: query }];
+    apiResponse = await fetchMediathekViewApiResponse(queries, 500);
+
+    if (apiResponse) {
+      mediathekCache.set(apiCacheKey, { response: apiResponse });
+    }
+  }
+
+  if (!apiResponse) {
+    console.log(`[Mediathek] No API response for movie query`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
+  let results: ApiResultItem[];
+  try {
+    const parsed: MediathekApiResponse = JSON.parse(apiResponse);
+    results = parsed.result?.results || [];
+    console.log(`[Mediathek] API returned ${results.length} results for movie query "${query}"`);
+  } catch {
+    console.log(`[Mediathek] Failed to parse API response for movie query`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
+  // Filter: skip trailers, m3u8, and apply movie minimum duration (60 min)
+  const filteredResults = results.filter((item) => {
+    if (item.url_video.endsWith(".m3u8")) return false;
+    if (SKIP_KEYWORDS.some((kw) => item.title.includes(kw))) return false;
+    if (item.duration < MOVIE_MIN_DURATION) return false;
+    return true;
+  });
+
+  console.log(
+    `[Mediathek] Results after movie filtering (min ${MOVIE_MIN_DURATION / 60} min): ${filteredResults.length}`
+  );
+
+  if (filteredResults.length === 0) {
+    console.log(`[Mediathek] No movie results after filtering`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
+  // Generate RSS items directly for the filtered results (as movies)
+  const newznabItems: NewznabItem[] = [];
+
+  for (const item of filteredResults) {
+    // Format the release title
+    const baseTitle = formatTitle(item.topic || item.title);
+    const year = new Date(item.filmlisteTimestamp * 1000).getFullYear();
+
+    // Calculate size
+    const size = item.size > 0 ? item.size : item.duration * 500000;
+
+    // Create item for each available quality
+    const qualities: Array<{
+      url: string;
+      qualityName: string;
+      category: string;
+      sizeMultiplier: number;
+    }> = [];
+
+    if (item.url_video_hd && (quality === "all" || quality === "best" || quality === "1080p")) {
+      qualities.push({
+        url: item.url_video_hd,
+        qualityName: "1080p",
+        category: "2040",
+        sizeMultiplier: 1.6,
+      });
+    }
+    if (
+      item.url_video &&
+      (quality === "all" || quality === "720p" || (quality === "best" && !item.url_video_hd))
+    ) {
+      qualities.push({
+        url: item.url_video,
+        qualityName: "720p",
+        category: "2040",
+        sizeMultiplier: 1.0,
+      });
+    }
+    if (item.url_video_low && (quality === "all" || quality === "480p")) {
+      qualities.push({
+        url: item.url_video_low,
+        qualityName: "480p",
+        category: "2030",
+        sizeMultiplier: 0.5,
+      });
+    }
+
+    for (const q of qualities) {
+      const releaseTitle = `${baseTitle}.${year}.GERMAN.${q.qualityName}.WEB.h264-MEDiATHEK`;
+      const adjustedSize = Math.floor(size * q.sizeMultiplier);
+
+      const encodedTitle = Buffer.from(releaseTitle).toString("base64");
+      const encodedUrl = Buffer.from(q.url).toString("base64");
+      const fakeDownloadUrl = `/api/newznab/fake_nzb_download?encodedUrl=${encodedUrl}&encodedTitle=${encodedTitle}`;
+
+      newznabItems.push({
+        title: releaseTitle,
+        guid: {
+          isPermaLink: true,
+          value: `${item.url_website || q.url}#movie-${q.qualityName}`,
+        },
+        link: q.url,
+        comments: item.url_website || "",
+        pubDate: new Date(item.filmlisteTimestamp * 1000).toUTCString(),
+        category: q.category === "2030" ? "Movies > SD" : "Movies > HD",
+        description: item.description || "",
+        enclosure: {
+          url: fakeDownloadUrl,
+          length: adjustedSize,
+          type: "application/x-nzb",
+        },
+        attributes: [
+          { name: "category", value: "2000" },
+          { name: "category", value: q.category },
+        ],
+      });
+    }
+  }
+
+  console.log(
+    `[Mediathek] Generated ${newznabItems.length} Newznab items for movie query (quality: ${quality})`
+  );
+
+  const response = convertItemsToRss(newznabItems, limit, offset);
+  mediathekCache.set(cacheKey, { response });
+  return response;
+}
