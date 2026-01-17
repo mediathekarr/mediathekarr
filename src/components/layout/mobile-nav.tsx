@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Tv } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -17,9 +18,7 @@ export function MobileNav() {
     <div className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-          <Tv className="w-5 h-5 text-primary-foreground" />
-        </div>
+        <Image src="/logo.svg" alt="RundfunkArr" width={32} height={32} />
         <span className="font-bold text-lg">RundfunkArr</span>
       </Link>
 
@@ -34,9 +33,7 @@ export function MobileNav() {
         <SheetContent side="left" className="w-64 p-0">
           <SheetHeader className="p-4 border-b border-border">
             <SheetTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Tv className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <Image src="/logo.svg" alt="RundfunkArr" width={32} height={32} />
               RundfunkArr
             </SheetTitle>
           </SheetHeader>
