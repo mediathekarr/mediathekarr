@@ -40,10 +40,10 @@ model Download {
   category        String
   status          String    @default("queued")
   progress        Int       @default(0)
-  size            Int       @default(0)
-  totalSize       Int       @default(0)
-  downloadedBytes Int       @default(0)
-  speed           Int       @default(0)
+  size            BigInt    @default(0)
+  totalSize       BigInt    @default(0)
+  downloadedBytes BigInt    @default(0)
+  speed           BigInt    @default(0)
   filePath        String?
   error           String?
   createdAt       DateTime  @default(now())
