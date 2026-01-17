@@ -1,0 +1,476 @@
+"use client";
+
+import { useState } from "react";
+import { useSettings } from "@/contexts/settings-context";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Settings,
+  Key,
+  Sliders,
+  Database,
+  Info,
+  Check,
+  X,
+  Loader2,
+  Save,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
+import packageJson from "../../../package.json";
+
+export default function SettingsPage() {
+  const { settings, isLoading, updateSettings, refreshSettings } = useSettings();
+  const [isSaving, setIsSaving] = useState(false);
+  const [validatingApi, setValidatingApi] = useState<string | null>(null);
+  const [apiStatus, setApiStatus] = useState<Record<string, boolean | null>>({});
+
+  // Local form state
+  const [formState, setFormState] = useState<Record<string, string>>({});
+
+  const getFieldValue = (key: string) => {
+    return formState[key] ?? settings?.[key] ?? "";
+  };
+
+  const setFieldValue = (key: string, value: string) => {
+    setFormState((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (keys: string[]) => {
+    setIsSaving(true);
+    try {
+      const updates: Record<string, string> = {};
+      for (const key of keys) {
+        if (formState[key] !== undefined) {
+          updates[key] = formState[key];
+        }
+      }
+      if (Object.keys(updates).length > 0) {
+        await updateSettings(updates);
+        setFormState({});
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const validateTvdbApi = async () => {
+    setValidatingApi("tvdb");
+    try {
+      const key = getFieldValue("api.tvdb.key");
+      const pin = getFieldValue("api.tvdb.pin");
+      if (!key || !pin) {
+        setApiStatus((prev) => ({ ...prev, tvdb: false }));
+        return;
+      }
+      // Attempt to login to TVDB
+      const res = await fetch("https://api4.thetvdb.com/v4/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apikey: key, pin }),
+      });
+      setApiStatus((prev) => ({ ...prev, tvdb: res.ok }));
+    } catch {
+      setApiStatus((prev) => ({ ...prev, tvdb: false }));
+    } finally {
+      setValidatingApi(null);
+    }
+  };
+
+  const validateTmdbApi = async () => {
+    setValidatingApi("tmdb");
+    try {
+      const key = getFieldValue("api.tmdb.key");
+      if (!key) {
+        setApiStatus((prev) => ({ ...prev, tmdb: false }));
+        return;
+      }
+      const res = await fetch(`https://api.themoviedb.org/3/configuration?api_key=${key}`);
+      setApiStatus((prev) => ({ ...prev, tmdb: res.ok }));
+    } catch {
+      setApiStatus((prev) => ({ ...prev, tmdb: false }));
+    } finally {
+      setValidatingApi(null);
+    }
+  };
+
+  const clearCache = async () => {
+    // This would need a backend endpoint
+    alert("Cache clearing not yet implemented");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-6 lg:p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="text-muted-foreground text-sm">Konfiguriere MediathekArr</p>
+      </div>
+
+      {/* Tabs */}
+      <Card>
+        <CardContent className="p-6">
+          <Tabs defaultValue="general">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsTrigger value="general" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Allgemein</span>
+              </TabsTrigger>
+              <TabsTrigger value="api" className="flex items-center gap-2">
+                <Key className="w-4 h-4" />
+                <span className="hidden sm:inline">API-Keys</span>
+              </TabsTrigger>
+              <TabsTrigger value="matching" className="flex items-center gap-2">
+                <Sliders className="w-4 h-4" />
+                <span className="hidden sm:inline">Matching</span>
+              </TabsTrigger>
+              <TabsTrigger value="cache" className="flex items-center gap-2">
+                <Database className="w-4 h-4" />
+                <span className="hidden sm:inline">Cache</span>
+              </TabsTrigger>
+              <TabsTrigger value="system" className="flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                <span className="hidden sm:inline">System</span>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* General Tab */}
+            <TabsContent value="general" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Allgemeine Einstellungen</CardTitle>
+                  <CardDescription>Download-Pfad und Qualitätspräferenzen</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Download-Pfad</label>
+                    <Input
+                      value={getFieldValue("download.path")}
+                      onChange={(e) => setFieldValue("download.path", e.target.value)}
+                      placeholder="/downloads"
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Verzeichnis für heruntergeladene Dateien
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Bevorzugte Qualität</label>
+                    <select
+                      value={getFieldValue("download.quality")}
+                      onChange={(e) => setFieldValue("download.quality", e.target.value)}
+                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="hd">HD (720p/1080p)</option>
+                      <option value="sd">SD (480p)</option>
+                      <option value="best">Beste verfügbare</option>
+                    </select>
+                  </div>
+                  <Button
+                    onClick={() => handleSave(["download.path", "download.quality"])}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4 mr-2" />
+                    )}
+                    Speichern
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* API Keys Tab */}
+            <TabsContent value="api" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>TVDB API</CardTitle>
+                  <CardDescription>
+                    TheTVDB.com API-Zugangsdaten für Show-Metadaten.{" "}
+                    <a
+                      href="https://thetvdb.com/api-information"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      API-Key beantragen
+                    </a>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">API Key</label>
+                    <Input
+                      value={getFieldValue("api.tvdb.key")}
+                      onChange={(e) => setFieldValue("api.tvdb.key", e.target.value)}
+                      placeholder="TVDB API Key"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">PIN</label>
+                    <Input
+                      value={getFieldValue("api.tvdb.pin")}
+                      onChange={(e) => setFieldValue("api.tvdb.pin", e.target.value)}
+                      placeholder="TVDB PIN"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={validateTvdbApi}
+                      disabled={validatingApi === "tvdb"}
+                    >
+                      {validatingApi === "tvdb" ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                      )}
+                      Testen
+                    </Button>
+                    {apiStatus.tvdb !== undefined && (
+                      <Badge variant={apiStatus.tvdb ? "default" : "destructive"}>
+                        {apiStatus.tvdb ? (
+                          <Check className="w-3 h-3 mr-1" />
+                        ) : (
+                          <X className="w-3 h-3 mr-1" />
+                        )}
+                        {apiStatus.tvdb ? "Verbunden" : "Fehler"}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>TMDB API</CardTitle>
+                  <CardDescription>
+                    TheMovieDB.org API für Film-Metadaten.{" "}
+                    <a
+                      href="https://www.themoviedb.org/settings/api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      API-Key beantragen
+                    </a>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">API Key</label>
+                    <Input
+                      value={getFieldValue("api.tmdb.key")}
+                      onChange={(e) => setFieldValue("api.tmdb.key", e.target.value)}
+                      placeholder="TMDB API Key"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={validateTmdbApi}
+                      disabled={validatingApi === "tmdb"}
+                    >
+                      {validatingApi === "tmdb" ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                      )}
+                      Testen
+                    </Button>
+                    {apiStatus.tmdb !== undefined && (
+                      <Badge variant={apiStatus.tmdb ? "default" : "destructive"}>
+                        {apiStatus.tmdb ? (
+                          <Check className="w-3 h-3 mr-1" />
+                        ) : (
+                          <X className="w-3 h-3 mr-1" />
+                        )}
+                        {apiStatus.tmdb ? "Verbunden" : "Fehler"}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Button
+                onClick={() => handleSave(["api.tvdb.key", "api.tvdb.pin", "api.tmdb.key"])}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                API-Keys speichern
+              </Button>
+            </TabsContent>
+
+            {/* Matching Tab */}
+            <TabsContent value="matching" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Matching-Einstellungen</CardTitle>
+                  <CardDescription>Konfiguriere wie Shows abgeglichen werden</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Matching-Strategie</label>
+                    <select
+                      value={getFieldValue("matching.strategy")}
+                      onChange={(e) => setFieldValue("matching.strategy", e.target.value)}
+                      className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="fuzzy">Fuzzy (flexibel)</option>
+                      <option value="strict">Strict (exakt)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Schwellwert</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={getFieldValue("matching.threshold")}
+                      onChange={(e) => setFieldValue("matching.threshold", e.target.value)}
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      0.0 = sehr locker, 1.0 = exakte Übereinstimmung
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Mindestdauer (Sekunden)</label>
+                    <Input
+                      type="number"
+                      value={getFieldValue("matching.minDuration")}
+                      onChange={(e) => setFieldValue("matching.minDuration", e.target.value)}
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Ignoriere Videos kürzer als diese Dauer
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() =>
+                      handleSave([
+                        "matching.strategy",
+                        "matching.threshold",
+                        "matching.minDuration",
+                      ])
+                    }
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4 mr-2" />
+                    )}
+                    Speichern
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Cache Tab */}
+            <TabsContent value="cache" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cache-Einstellungen</CardTitle>
+                  <CardDescription>Time-to-Live für verschiedene Caches</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Such-Cache TTL (Sekunden)</label>
+                    <Input
+                      type="number"
+                      value={getFieldValue("cache.ttl.search")}
+                      onChange={(e) => setFieldValue("cache.ttl.search", e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Metadaten-Cache TTL (Sekunden)</label>
+                    <Input
+                      type="number"
+                      value={getFieldValue("cache.ttl.metadata")}
+                      onChange={(e) => setFieldValue("cache.ttl.metadata", e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleSave(["cache.ttl.search", "cache.ttl.metadata"])}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4 mr-2" />
+                      )}
+                      Speichern
+                    </Button>
+                    <Button variant="outline" onClick={clearCache}>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Cache leeren
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* System Tab */}
+            <TabsContent value="system" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>System-Informationen</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Version</p>
+                      <p className="font-medium">{packageJson.version}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Node.js</p>
+                      <p className="font-medium">
+                        {typeof window === "undefined" ? "N/A" : "Browser"}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Aktionen</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" onClick={refreshSettings}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Einstellungen neu laden
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

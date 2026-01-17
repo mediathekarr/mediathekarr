@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { SettingsProvider } from "@/contexts/settings-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,19 +30,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={inter.className}>
-        <div className="flex h-screen overflow-hidden">
-          {/* Desktop/Tablet Sidebar */}
-          <Sidebar />
+        <SettingsProvider>
+          <div className="flex h-screen overflow-hidden">
+            {/* Desktop/Tablet Sidebar */}
+            <Sidebar />
 
-          {/* Main content area */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Mobile Navigation */}
-            <MobileNav />
+            {/* Main content area */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Mobile Navigation */}
+              <MobileNav />
 
-            {/* Page Content */}
-            <main className="flex-1 overflow-y-auto">{children}</main>
+              {/* Page Content */}
+              <main className="flex-1 overflow-y-auto">{children}</main>
+            </div>
           </div>
-        </div>
+        </SettingsProvider>
       </body>
     </html>
   );
