@@ -6,7 +6,10 @@ import type {
   MatchedEpisodeInfo,
   TvdbEpisode,
   EpisodeType,
+  TmdbMovieData,
+  ApiResultItem,
 } from "@/types";
+import type { MovieMatchResult } from "./movie-matcher";
 
 const XML_BUILDER = new Builder({
   xmldec: { version: "1.0", encoding: "UTF-8" },
@@ -334,6 +337,169 @@ export function generateRssItems(
   return items;
 }
 
+// ============== MOVIE RSS GENERATION ==============
+
+function generateMovieAttributes(
+  categoryValues: string[],
+  tmdbId?: number,
+  imdbId?: string | null
+): NewznabAttribute[] {
+  const attributes: NewznabAttribute[] = [];
+
+  for (const categoryValue of categoryValues) {
+    attributes.push({ name: "category", value: categoryValue });
+  }
+
+  if (tmdbId) {
+    attributes.push({ name: "tmdbid", value: tmdbId.toString() });
+  }
+
+  if (imdbId) {
+    attributes.push({ name: "imdbid", value: imdbId });
+  }
+
+  return attributes;
+}
+
+function generateMovieTitle(movieData: TmdbMovieData, quality: string): string {
+  const year = movieData.releaseDate ? movieData.releaseDate.split("-")[0] : "";
+  const title = movieData.germanTitle || movieData.title;
+  const yearPart = year ? `.${year}` : "";
+
+  return `${title}${yearPart}.GERMAN.${quality}.WEB.h264-MEDiATHEK`.replace(/ /g, ".");
+}
+
+function createMovieRssItem(
+  item: ApiResultItem,
+  movieData: TmdbMovieData,
+  quality: string,
+  sizeMultiplier: number,
+  category: string,
+  categoryValues: string[],
+  url: string
+): NewznabItem {
+  const adjustedSize = Math.floor(item.size * sizeMultiplier);
+  const parsedTitle = generateMovieTitle(movieData, quality);
+  const formattedTitle = formatTitle(parsedTitle);
+
+  const encodedTitle = Buffer.from(formattedTitle).toString("base64");
+  const encodedUrl = Buffer.from(url).toString("base64");
+
+  const fakeDownloadUrl = `/api/newznab/fake_nzb_download?encodedUrl=${encodedUrl}&encodedTitle=${encodedTitle}`;
+
+  return {
+    title: formattedTitle,
+    guid: {
+      isPermaLink: true,
+      value: `${item.url_website}#movie-${quality}`,
+    },
+    link: url,
+    comments: item.url_website,
+    pubDate: new Date(item.filmlisteTimestamp * 1000).toUTCString(),
+    category: category,
+    description: item.description,
+    enclosure: {
+      url: fakeDownloadUrl,
+      length: adjustedSize,
+      type: "application/x-nzb",
+    },
+    attributes: generateMovieAttributes(categoryValues, movieData.tmdbId, movieData.imdbId),
+  };
+}
+
+/**
+ * Generate RSS items for a movie match
+ */
+export function generateMovieRssItems(
+  matchResult: MovieMatchResult,
+  movieData: TmdbMovieData,
+  qualityPreference: QualityPreference = "all"
+): NewznabItem[] {
+  const items: NewznabItem[] = [];
+  const item = matchResult.item;
+
+  // Movie categories (2000 = Movies)
+  const baseCategories = ["2000"];
+
+  const has1080p = !!item.url_video_hd;
+  const has720p = !!item.url_video;
+  const has480p = !!item.url_video_low;
+
+  let include1080p = false;
+  let include720p = false;
+  let include480p = false;
+
+  switch (qualityPreference) {
+    case "all":
+      include1080p = has1080p;
+      include720p = has720p;
+      include480p = has480p;
+      break;
+    case "best":
+      if (has1080p) {
+        include1080p = true;
+      } else if (has720p) {
+        include720p = true;
+      } else if (has480p) {
+        include480p = true;
+      }
+      break;
+    case "1080p":
+      include1080p = has1080p;
+      break;
+    case "720p":
+      include720p = has720p;
+      break;
+    case "480p":
+      include480p = has480p;
+      break;
+  }
+
+  if (include1080p) {
+    items.push(
+      createMovieRssItem(
+        item,
+        movieData,
+        "1080p",
+        1.6,
+        "Movies > HD",
+        [...baseCategories, "2040"],
+        item.url_video_hd
+      )
+    );
+  }
+
+  if (include720p) {
+    items.push(
+      createMovieRssItem(
+        item,
+        movieData,
+        "720p",
+        1.0,
+        "Movies > HD",
+        [...baseCategories, "2040"],
+        item.url_video
+      )
+    );
+  }
+
+  if (include480p) {
+    items.push(
+      createMovieRssItem(
+        item,
+        movieData,
+        "480p",
+        0.4,
+        "Movies > SD",
+        [...baseCategories, "2030"],
+        item.url_video_low
+      )
+    );
+  }
+
+  return items;
+}
+
 // Generate fake NZB file content
 export function generateFakeNzb(url: string, title: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -382,7 +548,7 @@ export function getCapabilitiesXml(): string {
       searching: {
         search: { $: { available: "yes", supportedParams: "q" } },
         "tv-search": { $: { available: "yes", supportedParams: "q,tvdbid,season,ep" } },
-        "movie-search": { $: { available: "no" } },
+        "movie-search": { $: { available: "yes", supportedParams: "q,tmdbid,imdbid" } },
       },
       categories: {
         category: [

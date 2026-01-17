@@ -10,16 +10,19 @@ import {
 } from "./rulesets";
 import {
   generateRssItems,
+  generateMovieRssItems,
   convertItemsToRss,
   serializeRss,
   getEmptyRssResult,
   QualityPreference,
 } from "./newznab";
+import { matchMovieItems } from "./movie-matcher";
 import type {
   ApiResultItem,
   MediathekApiResponse,
   TvdbData,
   TvdbEpisode,
+  TmdbMovieData,
   Ruleset,
   MatchedEpisodeInfo,
   NewznabItem,
@@ -879,6 +882,107 @@ export async function fetchSearchResultsForRssSync(limit: number, offset: number
   );
   const response = convertItemsToRss(newznabItems, limit, offset);
 
+  mediathekCache.set(cacheKey, { response });
+  return response;
+}
+
+// ============== MOVIE SEARCH FUNCTIONS ==============
+
+/**
+ * Search for a movie in the Mediathek by TMDB data
+ */
+export async function fetchMovieSearchResults(
+  movieData: TmdbMovieData,
+  limit: number,
+  offset: number
+): Promise<string> {
+  const quality = await getQualityPreference();
+  console.log(
+    `[Mediathek] fetchMovieSearchResults: tmdbId=${movieData.tmdbId}, title="${movieData.title}", germanTitle="${movieData.germanTitle}", runtime=${movieData.runtime} min, quality=${quality}`
+  );
+
+  const cacheKey = `movie_${movieData.tmdbId}_${limit}_${offset}_${quality}`;
+
+  const cached = mediathekCache.get(cacheKey);
+  if (cached && typeof cached === "object" && "response" in cached) {
+    console.log(`[Mediathek] Returning cached movie response for ${cacheKey}`);
+    return (cached as { response: string }).response;
+  }
+
+  // Search by German title first, then original title
+  const searchTerms = [movieData.germanTitle];
+  if (movieData.title !== movieData.germanTitle) {
+    searchTerms.push(movieData.title);
+  }
+
+  let allResults: ApiResultItem[] = [];
+
+  for (const searchTerm of searchTerms) {
+    const apiCacheKey = `mediathekapi_movie_${searchTerm}`;
+    let apiResponse: string;
+    const cachedApi = mediathekCache.get(apiCacheKey);
+
+    if (cachedApi) {
+      console.log(`[Mediathek] Using cached API response for movie search: "${searchTerm}"`);
+      apiResponse = (cachedApi as { response: string }).response;
+    } else {
+      console.log(`[Mediathek] Searching MediathekView API for movie: "${searchTerm}"`);
+      const queries = [{ fields: QUERY_FIELDS, query: searchTerm }];
+      apiResponse = await fetchMediathekViewApiResponse(queries, 500);
+
+      if (apiResponse) {
+        mediathekCache.set(apiCacheKey, { response: apiResponse });
+      }
+    }
+
+    if (apiResponse) {
+      try {
+        const parsed: MediathekApiResponse = JSON.parse(apiResponse);
+        const results = parsed.result?.results || [];
+        console.log(`[Mediathek] API returned ${results.length} results for "${searchTerm}"`);
+
+        // Add to all results, avoiding duplicates by URL
+        const existingUrls = new Set(allResults.map((r) => r.url_video));
+        for (const result of results) {
+          if (!existingUrls.has(result.url_video)) {
+            allResults.push(result);
+          }
+        }
+      } catch {
+        console.log(`[Mediathek] Failed to parse API response for movie search`);
+      }
+    }
+  }
+
+  if (allResults.length === 0) {
+    console.log(`[Mediathek] No results found for movie`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
+  console.log(`[Mediathek] Total results for movie matching: ${allResults.length}`);
+
+  // Match results against movie data
+  const matchResults = await matchMovieItems(allResults, movieData);
+
+  if (matchResults.length === 0) {
+    console.log(`[Mediathek] No matches found for movie`);
+    const response = serializeRss(getEmptyRssResult());
+    mediathekCache.set(cacheKey, { response });
+    return response;
+  }
+
+  // Generate RSS items for matches
+  const newznabItems: NewznabItem[] = matchResults.flatMap((match) =>
+    generateMovieRssItems(match, movieData, quality)
+  );
+
+  console.log(
+    `[Mediathek] Generated ${newznabItems.length} Newznab items for movie (quality: ${quality})`
+  );
+
+  const response = convertItemsToRss(newznabItems, limit, offset);
   mediathekCache.set(cacheKey, { response });
   return response;
 }

@@ -39,6 +39,16 @@ export interface TvdbData {
   episodes: TvdbEpisode[];
 }
 
+// TMDB Movie Types
+export interface TmdbMovieData {
+  tmdbId: number;
+  imdbId: string | null;
+  title: string; // Original title
+  germanTitle: string; // German title
+  runtime: number | null; // Runtime in minutes
+  releaseDate: string | null;
+}
+
 export interface TvdbAlias {
   language: string;
   name: string;

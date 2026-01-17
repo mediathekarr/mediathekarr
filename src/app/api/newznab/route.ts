@@ -3,8 +3,10 @@ import {
   fetchSearchResultsById,
   fetchSearchResultsByString,
   fetchSearchResultsForRssSync,
+  fetchMovieSearchResults,
 } from "@/services/mediathek";
 import { getShowInfoByTvdbId } from "@/services/shows";
+import { getMovieInfoByTmdbId, getMovieInfoByImdbId } from "@/services/tmdb";
 import { serializeRss, getEmptyRssResult } from "@/services/newznab";
 
 export async function GET(request: NextRequest) {
@@ -29,7 +31,7 @@ export async function GET(request: NextRequest) {
     <searching>
         <search available="yes" supportedParams="q"/>
         <tv-search available="yes" supportedParams="q,season,ep,tvdbid"/>
-        <movie-search available="yes" supportedParams="q,imdbid"/>
+        <movie-search available="yes" supportedParams="q,tmdbid,imdbid"/>
         <audio-search available="no" supportedParams="" />
     </searching>
     <categories>
@@ -50,10 +52,89 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // Handle search requests
-  if (t === "tvsearch" || t === "search" || t === "movie") {
+  // Handle movie search requests
+  if (t === "movie") {
     console.log(
-      `[Newznab] Search request: t=${t}, q=${q}, tvdbid=${tvdbid}, season=${season}, episode=${episode}`
+      `[Newznab] Movie search request: t=${t}, q=${q}, tmdbid=${tmdbid}, imdbid=${imdbid}`
+    );
+
+    try {
+      // Search by TMDB ID
+      if (tmdbid) {
+        const parsedTmdbId = parseInt(tmdbid, 10);
+        console.log(`[Newznab] Searching movie by TMDB ID: ${parsedTmdbId}`);
+        if (!isNaN(parsedTmdbId)) {
+          const movieData = await getMovieInfoByTmdbId(parsedTmdbId);
+          console.log(
+            `[Newznab] TMDB lookup result: ${movieData ? `Found "${movieData.germanTitle}" (Original: "${movieData.title}")` : "Not found"}`
+          );
+
+          if (!movieData) {
+            return new NextResponse(serializeRss(getEmptyRssResult()), {
+              status: 200,
+              headers: { "Content-Type": "application/xml; charset=utf-8" },
+            });
+          }
+
+          const searchResults = await fetchMovieSearchResults(movieData, limit, offset);
+
+          return new NextResponse(searchResults, {
+            status: 200,
+            headers: { "Content-Type": "application/xml; charset=utf-8" },
+          });
+        }
+      }
+
+      // Search by IMDB ID
+      if (imdbid) {
+        console.log(`[Newznab] Searching movie by IMDB ID: ${imdbid}`);
+        const movieData = await getMovieInfoByImdbId(imdbid);
+        console.log(
+          `[Newznab] IMDB lookup result: ${movieData ? `Found "${movieData.germanTitle}" (Original: "${movieData.title}")` : "Not found"}`
+        );
+
+        if (!movieData) {
+          return new NextResponse(serializeRss(getEmptyRssResult()), {
+            status: 200,
+            headers: { "Content-Type": "application/xml; charset=utf-8" },
+          });
+        }
+
+        const searchResults = await fetchMovieSearchResults(movieData, limit, offset);
+
+        return new NextResponse(searchResults, {
+          status: 200,
+          headers: { "Content-Type": "application/xml; charset=utf-8" },
+        });
+      }
+
+      // Search by query string for movies
+      if (q) {
+        console.log(`[Newznab] Movie search by query: ${q} - not implemented, returning empty`);
+        return new NextResponse(serializeRss(getEmptyRssResult()), {
+          status: 200,
+          headers: { "Content-Type": "application/xml; charset=utf-8" },
+        });
+      }
+
+      // No search criteria provided
+      return new NextResponse(serializeRss(getEmptyRssResult()), {
+        status: 200,
+        headers: { "Content-Type": "application/xml; charset=utf-8" },
+      });
+    } catch (error) {
+      console.error("Movie search error:", error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Unknown error" },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Handle TV search requests
+  if (t === "tvsearch" || t === "search") {
+    console.log(
+      `[Newznab] TV search request: t=${t}, q=${q}, tvdbid=${tvdbid}, season=${season}, episode=${episode}`
     );
 
     try {

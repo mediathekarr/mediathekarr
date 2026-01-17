@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { tvdbCache } from "@/lib/cache";
 import { getSetting } from "@/lib/settings";
-import type { TvdbData, TvdbEpisode } from "@/types";
+import type { TvdbData, TvdbEpisode, TmdbMovieData } from "@/types";
 
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 
@@ -248,4 +248,156 @@ async function processShowData(
   tvdbCache.set(cacheKey, tvdbData);
 
   return tvdbData;
+}
+
+// ============== MOVIE FUNCTIONS ==============
+
+interface TmdbMovieDetails {
+  id: number;
+  imdb_id: string | null;
+  title: string;
+  original_title: string;
+  runtime: number | null;
+  release_date: string | null;
+}
+
+interface TmdbFindMovieResult {
+  movie_results: Array<{
+    id: number;
+    title: string;
+    original_title: string;
+    release_date: string;
+  }>;
+}
+
+/**
+ * Get movie info by TMDB ID
+ * Uses German locale to get German title
+ */
+export async function getMovieInfoByTmdbId(tmdbId: number): Promise<TmdbMovieData | null> {
+  if (!tmdbId) {
+    return null;
+  }
+
+  const apiKey = await getApiKey();
+  if (!apiKey) {
+    console.error("[TMDB] No API key configured");
+    return null;
+  }
+
+  // Check memory cache first
+  const cacheKey = `tmdb_movie_${tmdbId}`;
+  const cached = tvdbCache.get(cacheKey) as TmdbMovieData | undefined;
+  if (cached) {
+    console.log(`[TMDB] Movie cache hit for TMDB ID ${tmdbId}`);
+    return cached;
+  }
+
+  try {
+    console.log(`[TMDB] Looking up movie by TMDB ID ${tmdbId}`);
+    const headers = getAuthHeaders(apiKey);
+
+    // First get the original movie details (for runtime and imdb_id)
+    const detailsUrl = getApiUrl(`/movie/${tmdbId}`, apiKey);
+    const detailsResponse = await fetch(detailsUrl, { headers });
+
+    if (!detailsResponse.ok) {
+      console.error(`[TMDB] Movie details request failed: ${detailsResponse.status}`);
+      return null;
+    }
+
+    const details: TmdbMovieDetails = await detailsResponse.json();
+
+    // Now get the German title
+    const germanUrl = getApiUrl(`/movie/${tmdbId}?language=de-DE`, apiKey);
+    const germanResponse = await fetch(germanUrl, { headers });
+
+    let germanTitle = details.title; // fallback to original
+    if (germanResponse.ok) {
+      const germanDetails: TmdbMovieDetails = await germanResponse.json();
+      germanTitle = germanDetails.title || details.title;
+    }
+
+    const movieData: TmdbMovieData = {
+      tmdbId: details.id,
+      imdbId: details.imdb_id,
+      title: details.original_title || details.title,
+      germanTitle: germanTitle,
+      runtime: details.runtime,
+      releaseDate: details.release_date,
+    };
+
+    console.log(
+      `[TMDB] Found movie: "${movieData.title}" (German: "${movieData.germanTitle}"), runtime: ${movieData.runtime} min`
+    );
+
+    // Cache using metadata TTL
+    tvdbCache.set(cacheKey, movieData);
+
+    return movieData;
+  } catch (error) {
+    console.error("[TMDB] Error fetching movie data:", error);
+    return null;
+  }
+}
+
+/**
+ * Get movie info by IMDB ID
+ * Uses TMDB /find endpoint to resolve IMDB ID to TMDB ID
+ */
+export async function getMovieInfoByImdbId(imdbId: string): Promise<TmdbMovieData | null> {
+  if (!imdbId) {
+    return null;
+  }
+
+  const apiKey = await getApiKey();
+  if (!apiKey) {
+    console.error("[TMDB] No API key configured");
+    return null;
+  }
+
+  // Check memory cache first
+  const cacheKey = `tmdb_movie_imdb_${imdbId}`;
+  const cached = tvdbCache.get(cacheKey) as TmdbMovieData | undefined;
+  if (cached) {
+    console.log(`[TMDB] Movie cache hit for IMDB ID ${imdbId}`);
+    return cached;
+  }
+
+  try {
+    console.log(`[TMDB] Looking up movie by IMDB ID ${imdbId}`);
+    const headers = getAuthHeaders(apiKey);
+
+    // Use /find endpoint to resolve IMDB ID
+    const findUrl = getApiUrl(`/find/${imdbId}?external_source=imdb_id`, apiKey);
+    const findResponse = await fetch(findUrl, { headers });
+
+    if (!findResponse.ok) {
+      console.error(`[TMDB] Find request failed: ${findResponse.status}`);
+      return null;
+    }
+
+    const findData: TmdbFindMovieResult = await findResponse.json();
+
+    if (!findData.movie_results || findData.movie_results.length === 0) {
+      console.log(`[TMDB] No movie found for IMDB ID ${imdbId}`);
+      return null;
+    }
+
+    const tmdbId = findData.movie_results[0].id;
+    console.log(`[TMDB] Resolved IMDB ID ${imdbId} to TMDB ID ${tmdbId}`);
+
+    // Now get the full movie info using the TMDB ID
+    const movieData = await getMovieInfoByTmdbId(tmdbId);
+
+    if (movieData) {
+      // Also cache under the IMDB ID
+      tvdbCache.set(cacheKey, movieData);
+    }
+
+    return movieData;
+  } catch (error) {
+    console.error("[TMDB] Error resolving IMDB ID:", error);
+    return null;
+  }
 }
